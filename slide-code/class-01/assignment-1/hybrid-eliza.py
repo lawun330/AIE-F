@@ -3,6 +3,7 @@
 ## Written by Ye, Language Understanding Lab., Myanmar
 ## Last updated: 14 Mar 2026
 ## Reference code: https://www.kaggle.com/code/wjburns/eliza 
+## Dataset link: https://www.kaggle.com/datasets/bhavikjikadara/emotions-dataset
 
 import os
 import re
