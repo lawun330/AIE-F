@@ -40,6 +40,30 @@ group-2/
 └── requirements.txt                # dependencies
 ```
 
+## Project Flow
+
+The code is organized so a single wrapper script controls the high-level mode, while `src/` contains reusable building blocks.
+
+- `group2-hybrid-eliza.py` (primary entry point): the top-level CLI wrapper/dispatcher. It selects one of the modes and starts the corresponding script in `scripts/`.
+
+- `scripts/train.py`: training orchestration. It uses `src/prep_data.py` to build train/validation tensors and class weights, uses `src/model.py` to define the model, and saves a checkpoint that includes model weights plus vocabulary/label mappings.
+
+- `scripts/eval.py`: evaluation/prediction on a labeled dataset. It loads the saved checkpoint, uses `src/prep_data.py` to convert raw texts into padded token-id tensors using the same preprocessing pipeline, then runs `src/model.py` to produce predictions and confidence scores.
+
+- `scripts/chat.py`: interactive inference. It loads the saved checkpoint and reuses the same preprocessing + model inference path as `scripts/eval.py` for user-entered text, then prints the predicted emotion and confidence.
+
+- `src/prep_data.py`: shared data preparation pipeline used by both training and inference. It connects dataset reading, text preprocessing, token/id encoding, padding/truncation, train/val splitting (for training), and class-weight computation; it relies on `src/preprocessing.py` (TextProcessor) and `src/vocab_builder.py` (vocabulary + label mapping utilities).
+
+- `src/preprocessing.py`: text preprocessing pipeline. It performs Zawgyi-to-Unicode normalization when needed, regex punctuation cleanup, tokenization with the MMDT tokenizer, and stopword removal; it relies on `src/rabbit.py` for Zawgyi conversion and on the Myanmar detection/tokenization libraries.
+
+- `src/vocab_builder.py`: vocabulary and label mapping utilities. It builds the `word -> id` vocabulary from training tokenized text and defines the fixed `label -> id` order for the six emotion classes.
+
+- `src/model.py`: model definition. It embeds token ids, runs a bidirectional LSTM, then pools sequence information (either attention pooling or final-state pooling) and applies a linear classifier to get logits.
+
+- `src/rabbit.py`: Zawgyi-to-Unicode conversion rules used by the preprocessing pipeline.
+
+In short: `group2-hybrid-eliza.py` starts the run; `scripts/*.py` control train/eval/chat; `src/*.py` implements the reusable preprocessing/model utilities.
+
 ## Sources:
 - Burmese grammar: https://online.fliphtml5.com/rrlzh/mbir/#p=1
 - Rabbit Zawgyi to Unicode Converter: https://github.com/Rabbit-Converter/Rabbit-Python 
