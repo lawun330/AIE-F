@@ -64,6 +64,24 @@ The code is organized so a single wrapper script controls the high-level mode, w
 
 In short: `group2-hybrid-eliza.py` starts the run; `scripts/*.py` control train/eval/chat; `src/*.py` implements the reusable preprocessing/model utilities.
 
+## Standalone Burmese Chat UI
+
+You can run a separate local browser chat UI for the Burmese Hybrid ELIZA bot with:
+
+```bash
+python eliza/burmese_chat_ui.py
+```
+
+Then open `http://127.0.0.1:8765` in your browser.
+
+Optional:
+
+```bash
+python eliza/burmese_chat_ui.py --host 0.0.0.0 --port 9000 --model_path /path/to/eliza_eq_mm_lstm.pth
+```
+
+If no `.pth` checkpoint is available yet, the UI still works in rule-based mode and continues chatting in Burmese.
+
 ## Sources:
 - Burmese grammar: https://online.fliphtml5.com/rrlzh/mbir/#p=1
 - Rabbit Zawgyi to Unicode Converter: https://github.com/Rabbit-Converter/Rabbit-Python 
