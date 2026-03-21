@@ -16,6 +16,8 @@ from src.prep_data import encode_texts
 
 # function to load model and preprocessing artifacts from checkpoint
 def load_inference_bundle(checkpoint_path):
+
+    # load details from checkpoint
     checkpoint = torch.load(checkpoint_path, map_location="cpu")
     word2id = checkpoint["vocab"]
     state_dict = checkpoint["state"]
@@ -24,8 +26,25 @@ def load_inference_bundle(checkpoint_path):
     use_char_ngrams = checkpoint.get("use_char_ngrams", False)
     ngram_min = checkpoint.get("ngram_min", 2)
     ngram_max = checkpoint.get("ngram_max", 3)
+    output_dim = checkpoint.get("output_dim", len(id2label))
+    use_attention = checkpoint.get("use_attention", False)
+    embed_dim = checkpoint.get("embed_dim", 128)
+    hidden_dim = checkpoint.get("hidden_dim", 64)
+    num_layers = checkpoint.get("num_layers", 1)
+    dropout = checkpoint.get("dropout", 0.2)
+    pad_idx = checkpoint.get("pad_idx", 0)
 
-    model = EmotionalBiLSTM(vocab_size=len(word2id))
+    # initialize model with details from checkpoint
+    model = EmotionalBiLSTM(
+        vocab_size=len(word2id),
+        embed_dim=embed_dim,
+        hidden_dim=hidden_dim,
+        output_dim=output_dim,
+        num_layers=num_layers,
+        dropout=dropout,
+        use_attention=use_attention,
+        pad_idx=pad_idx,
+    )
     model.load_state_dict(state_dict)
     model.eval()
 
@@ -44,7 +63,7 @@ def predict_texts(
     ngram_min: int = 2,
     ngram_max: int = 3,
 ):
-    x = encode_texts(
+    x, lengths = encode_texts(
         texts,
         word2id,
         max_len=max_len,
@@ -54,7 +73,7 @@ def predict_texts(
         ngram_max=ngram_max,
     )
     with torch.no_grad():
-        logits = model(x)
+        logits = model(x, lengths)
         probs = torch.softmax(logits, dim=1)
         pred_ids = probs.argmax(dim=1).tolist()
         pred_scores = probs.max(dim=1).values.tolist()

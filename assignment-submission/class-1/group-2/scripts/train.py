@@ -7,6 +7,7 @@ This module depends on:
 - src/model.py
 """
 
+import copy
 import os
 import random
 import pandas as pd
@@ -37,6 +38,9 @@ def run_train(
     use_char_ngrams: bool = False,
     ngram_min: int = 2,
     ngram_max: int = 3,
+    weight_decay: float = 1e-4,
+    patience: int = 4,
+    max_grad_norm: float = 1.0,
 ):
 
     # set seed for reproducibility
@@ -66,21 +70,23 @@ def run_train(
     )
 
     # check batch shapes of train and val; same as model sees each step
-    xb, yb = next(iter(train_loader))
-    xvb, yvb = next(iter(val_loader))
-    print(f"[shapes] train batch: x {tuple(xb.shape)}, y {tuple(yb.shape)}")
-    print(f"[shapes] val batch: x {tuple(xvb.shape)}, y {tuple(yvb.shape)}")
+    xb, yb, lb = next(iter(train_loader))
+    xvb, yvb, lvb = next(iter(val_loader))
+    print(f"[shapes] train batch: x {tuple(xb.shape)}, y {tuple(yb.shape)}, lengths {tuple(lb.shape)}")
+    print(f"[shapes] val batch: x {tuple(xvb.shape)}, y {tuple(yvb.shape)}, lengths {tuple(lvb.shape)}")
 
     # check full shapes of stacked train and val; high ram cost
     if show_shape_checks:
-        train_X, train_y = zip(*[(x, y) for x, y in train_ds])
+        train_X, train_y, train_l = zip(*[(x, y, l) for x, y, l in train_ds])
         train_X = torch.stack(train_X)
         train_y = torch.stack(train_y)
-        val_X, val_y = zip(*[(x, y) for x, y in val_ds])
+        train_l = torch.stack(train_l)
+        val_X, val_y, val_l = zip(*[(x, y, l) for x, y, l in val_ds])
         val_X = torch.stack(val_X)
         val_y = torch.stack(val_y)
-        print(f"[shapes] train_X {tuple(train_X.shape)}, train_y {tuple(train_y.shape)}")
-        print(f"[shapes] val_X {tuple(val_X.shape)}, val_y {tuple(val_y.shape)}")
+        val_l = torch.stack(val_l)
+        print(f"[shapes] train_X {tuple(train_X.shape)}, train_y {tuple(train_y.shape)}, train_l {tuple(train_l.shape)}")
+        print(f"[shapes] val_X {tuple(val_X.shape)}, val_y {tuple(val_y.shape)}, val_l {tuple(val_l.shape)}")
 
     # choose device (GPU if available, otherwise CPU)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -89,13 +95,22 @@ def run_train(
         print(f"GPU device name: {torch.cuda.get_device_name(0)}, count: {torch.cuda.device_count()}")
 
     # initialize model (from src/model.py)
-    model = EmotionalBiLSTM(vocab_size=len(word2id)).to(device)
+    ## this automatically uses the default values for embed_dim, hidden_dim, num_layers, dropout, use_attention, etc.
+    model = EmotionalBiLSTM(
+        vocab_size=len(word2id),
+        output_dim=len(id2label),
+    ).to(device)
 
-    # initialize optimizer
-    optimizer = optim.Adam(model.parameters(), lr=lr)
+    # initialize optimizer with weight decay
+    optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
 
     # compute class weights
     criterion = nn.CrossEntropyLoss(weight=class_weights.to(device))
+
+    best_state = None
+    best_val_acc = 0.0
+    epochs_without_improvement = 0
+    stopped_epoch = None
 
     # training loop
     for epoch in range(epochs):
@@ -103,16 +118,22 @@ def run_train(
         total_loss = 0
 
         # train model in batches
-        for x, y in train_loader:
-            x, y = x.to(device), y.to(device)
+        for x, y, lengths in train_loader:
+            x, y, lengths = x.to(device), y.to(device), lengths.to(device)
 
             optimizer.zero_grad()
-            outputs = model(x)
+            outputs = model(x, lengths)
             loss = criterion(outputs, y)
             loss.backward()
+
+            # clip gradients
+            if max_grad_norm > 0:
+                nn.utils.clip_grad_norm_(model.parameters(), max_norm=max_grad_norm)
             optimizer.step()
 
             total_loss += loss.item()
+
+        avg_train_loss = total_loss / len(train_loader) if train_loader else 0.0
 
         # validation
         model.eval()
@@ -121,9 +142,9 @@ def run_train(
 
         # validate model in batches
         with torch.no_grad():
-            for x, y in val_loader:
-                x, y = x.to(device), y.to(device)
-                outputs = model(x)
+            for x, y, lengths in val_loader:
+                x, y, lengths = x.to(device), y.to(device), lengths.to(device)
+                outputs = model(x, lengths)
                 _, predicted = torch.max(outputs, 1)
 
                 total += y.size(0)
@@ -133,10 +154,33 @@ def run_train(
         acc = correct / total if total else 0.0
 
         # print epoch results
-        print(f"Epoch {epoch+1}/{epochs} | Loss: {total_loss:.4f} | Val Acc: {acc:.2%}")
+        print(
+            f"Epoch {epoch+1}/{epochs} | Loss: {avg_train_loss:.4f} | Val Acc: {acc:.2%}"
+        )
 
-    # save model & vocab
-    os.makedirs("checkpoints", exist_ok=True)
+        # early stopping
+        if acc > best_val_acc:
+            best_val_acc = acc
+            best_state = copy.deepcopy(model.state_dict())
+            epochs_without_improvement = 0
+        else:
+            if patience > 0:
+                epochs_without_improvement += 1
+                if epochs_without_improvement >= patience:
+                    stopped_epoch = epoch + 1
+                    print(
+                        f"[*] Early stopping at epoch {stopped_epoch}. "
+                        f"Best Val Acc: {best_val_acc:.2%}"
+                    )
+                    break
+
+    if best_state is not None:
+        model.load_state_dict(best_state)
+
+    # save model & vocab (best weights when early stopping or best epoch improved)
+    ckpt_dir = os.path.dirname(os.path.abspath(checkpoint_path))
+    if ckpt_dir:
+        os.makedirs(ckpt_dir, exist_ok=True)
 
     torch.save(
         {
@@ -150,11 +194,23 @@ def run_train(
         "use_char_ngrams": use_char_ngrams,
         "ngram_min": ngram_min,
         "ngram_max": ngram_max,
+        "best_val_acc": best_val_acc,
+        "weight_decay": weight_decay,
+        "patience": patience,
+        "max_grad_norm": max_grad_norm,
+        "stopped_epoch": stopped_epoch,
+        "use_attention": model.use_attention,
+        "embed_dim": model.embed_dim,
+        "hidden_dim": model.hidden_dim,
+        "num_layers": model.num_layers,
+        "dropout": model.dropout,
+        "output_dim": model.output_dim,
+        "pad_idx": model.pad_idx,
         },
         checkpoint_path,
     )
 
-    print(f"[+] Checkpoint saved to {checkpoint_path}")
+    print(f"[+] Checkpoint saved to {checkpoint_path} (best val acc: {best_val_acc:.2%})")
 
 
 # function to run training with default values

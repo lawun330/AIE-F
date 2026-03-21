@@ -43,14 +43,19 @@ def _get_processor(
     return _processor_cache[key]
 
 
-# function to convert tokens to ids and pad/truncate
-def _tokens_to_ids(tokens, word2id, max_len: int, pad_id: int = 0, unk_id: int = 1):
+# function to convert tokens to ids, pad/truncate, and return true length for pack_padded_sequence
+def _tokens_to_ids(
+    tokens, word2id, max_len: int, pad_id: int = 0, unk_id: int = 1
+):
     """
-    Convert a token list into a fixed-length list of token ids, then pad/truncate to `max_len`.
+    Convert a token list into a fixed-length list of token ids.
+    Add padding to the end of the row to `max_len`.
+    Return the length of the true sequence (excluding padding).
     """
-    ids = [word2id.get(t, unk_id) for t in tokens][:max_len]
-    ids = ids + [pad_id] * (max_len - len(ids))
-    return ids
+    raw = [word2id.get(t, unk_id) for t in tokens][:max_len]
+    length = max(1, len(raw))
+    ids = raw + [pad_id] * (max_len - len(raw))
+    return ids, length
 
 
 # function to convert text inputs into model-ready tensors
@@ -69,7 +74,7 @@ def encode_texts(
     If device is specified, the tensor will be moved to the device.
 
     Input: texts (str or list[str]) -> normalize/tokenize/stopwords -> token ids -> truncate/pad -> tensor
-    Output: tensor of shape (batch, max_len) of token ids
+    Output: (x, lengths) where x is (batch, max_len) and lengths is (batch,) for pack_padded_sequence
     """
     processor = _get_processor(
         stopwords_path,
@@ -84,19 +89,23 @@ def encode_texts(
 
     # convert tokens to ids and pad/truncate
     xs = []
+    lens = []
     for t in texts:
         tokens = processor.process(str(t))
-        ids = _tokens_to_ids(tokens, word2id, max_len=max_len)
+        ids, length = _tokens_to_ids(tokens, word2id, max_len=max_len)
         xs.append(ids)
+        lens.append(length)
 
     # transform into tensor
     x = torch.tensor(xs, dtype=torch.long)
-    
+    lengths = torch.tensor(lens, dtype=torch.long)
+
     # move to device if specified
     if device is not None:
         x = x.to(device)
-    
-    return x  # shape: (batch, max_len)
+        lengths = lengths.to(device)
+
+    return x, lengths
 
 
 # function to prepare all offline training artifacts
@@ -165,15 +174,19 @@ def prepare_train_val_data(
     # encode labels to ids
     encoded_labels = df[label_col].astype(int).tolist()
 
-    # build model-ready tensor
+    # build model-ready tensors
     X = []
+    lengths_list = []
     for tokens in tokenized_texts.tolist():
-        X.append(_tokens_to_ids(tokens, word2id, max_len=max_len))
+        ids, length = _tokens_to_ids(tokens, word2id, max_len=max_len)
+        X.append(ids)
+        lengths_list.append(length)
     X = torch.tensor(X, dtype=torch.long)
+    lengths = torch.tensor(lengths_list, dtype=torch.long)
     y = torch.tensor(encoded_labels, dtype=torch.long)
 
     # create tensor dataset
-    full_ds = TensorDataset(X, y)
+    full_ds = TensorDataset(X, y, lengths)
 
     # train/val sizes
     val_size = int(len(full_ds) * val_split)
