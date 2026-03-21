@@ -34,14 +34,14 @@ def main():
     )
     parser.add_argument(
         "--checkpoint_path",
-        default="./checkpoints/BiLSTM_model.pth",
+        default="./checkpoints/bilstm-attention-model.pth",
         help="checkpoint path for train save / eval load / chat load",
     )
 
     # training loop
-    parser.add_argument("--epochs", type=int, default=10)
+    parser.add_argument("--epochs", type=int, default=20)
     parser.add_argument("--batch_size", type=int, default=32)
-    parser.add_argument("--val_split", type=float, default=0.1)
+    parser.add_argument("--val_split", type=float, default=0.2)
     parser.add_argument("--max_len", type=int, default=50)
     parser.add_argument("--lr", type=float, default=0.001)
     parser.add_argument("--seed", type=int, default=42)
