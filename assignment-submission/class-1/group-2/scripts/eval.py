@@ -11,7 +11,7 @@ import pandas as pd
 import torch
 
 from src.model import EmotionalBiLSTM
-from src.prep_data import encode_texts
+from src.prep_data import drop_invalid_supervised_rows, encode_texts
 
 
 # function to load model and preprocessing artifacts from checkpoint
@@ -98,8 +98,11 @@ def run_eval(
 
     # load data
     df = pd.read_csv(data_csv)
+    df = drop_invalid_supervised_rows(df, text_col, label_col)
+    if len(df) == 0:
+        raise ValueError("no rows left after removing missing or invalid labels/text")
     texts = df[text_col].tolist()
-    labels = df[label_col].astype(int).tolist()
+    labels = df[label_col].tolist()
 
     # initialize counters
     correct = 0

@@ -4,6 +4,7 @@ This module depends on:
 - src/rabbit.py
 """
 
+from pathlib import Path
 import re
 import myanmartools
 from mmdt_tokenizer import MyanmarTokenizer
@@ -14,6 +15,31 @@ from src.rabbit import Rabbit
 ## u1000-u109F: Myanmar unicode block
 ## uAA60-uAA7F: Myanmar extended unicode block
 MYANMAR_TOKEN_RE = re.compile(r"[\u1000-\u109F\uAA60-\uAA7F]+|[a-zA-Z0-9]+")
+
+# group-2 project root (parent of src/)
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+# function to resolve stopwords path
+def _resolve_stopwords_path(file_path: str) -> Path:
+    """
+    Resolve stopwords path relative to project root.
+    """
+    p = Path(file_path)
+    if p.is_absolute():
+        return p
+    cwd_candidate = (Path.cwd() / p).resolve()
+    if cwd_candidate.exists():
+        return cwd_candidate
+    rel = p
+    while rel.parts and rel.parts[0] == "..":
+        rel = Path(*rel.parts[1:])
+    under_root = (_PROJECT_ROOT / rel).resolve()
+    if under_root.exists():
+        return under_root
+    default = _PROJECT_ROOT / "data" / "stopwords.txt"
+    if default.exists():
+        return default
+    return _PROJECT_ROOT / p
 
 
 # function to build character n-gram tokens
@@ -35,8 +61,9 @@ def load_stopwords(file_path: str):
     Returns a set for fast lookup.
     """
     stopwords = set()
+    resolved = _resolve_stopwords_path(file_path)
 
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(resolved, "r", encoding="utf-8") as f:
         for line in f:
             word = line.strip()
             if word:

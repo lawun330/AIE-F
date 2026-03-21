@@ -15,6 +15,19 @@ from src.preprocessing import TextProcessor, load_stopwords
 from src.vocab_builder import build_vocab, build_label_map
 
 
+def drop_invalid_supervised_rows(
+    df: pd.DataFrame, text_col: str, label_col: str
+) -> pd.DataFrame:
+    # drop rows with missing text/label or non-numeric labels (same idea as eliza_experiments dropna + astype)
+    out = df.dropna(subset=[text_col, label_col]).copy()
+    out[label_col] = pd.to_numeric(out[label_col], errors="coerce")
+    out = out.dropna(subset=[label_col]).copy()
+    if len(out) == 0:
+        return out
+    out[label_col] = out[label_col].astype(int)
+    return out
+
+
 # cache TextProcessor instances (eval/chat may call encoding repeatedly)
 _processor_cache = {}
 
@@ -188,6 +201,14 @@ def prepare_train_val_data(
             f"expected CSV columns '{text_col}' and '{label_col}', got: {list(df.columns)}"
         )
 
+    n_in = len(df)
+    df = drop_invalid_supervised_rows(df, text_col, label_col)
+    if len(df) == 0:
+        raise ValueError("no rows left after removing missing or invalid labels/text")
+    n_drop = n_in - len(df)
+    if n_drop:
+        print(f"dropped {n_drop} row(s) with missing or invalid labels/text")
+
     # get the TextProcessor and tokenize
     processor = _get_processor(
         stopwords_path,
@@ -207,8 +228,8 @@ def prepare_train_val_data(
     # build vocabulary
     word2id = build_vocab(tokenized_texts.tolist(), max_vocab=max_vocab)
 
-    # encode labels to ids
-    encoded_labels = df[label_col].astype(int).tolist()
+    # encode labels to ids (already int after drop_invalid_supervised_rows)
+    encoded_labels = df[label_col].tolist()
 
     # build model-ready tensors
     X = []

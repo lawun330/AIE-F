@@ -10,7 +10,7 @@ This module depends on:
 
 import argparse
 
-from scripts.chat import run_chat
+from scripts.chat import launch_custom_ui, launch_streamlit_ui, run_chat
 from scripts.eval import run_eval
 from scripts.train import run_train
 
@@ -29,12 +29,12 @@ def main():
     )
     parser.add_argument(
         "--data_path",
-        default="../data/merged/Combined.csv",
+        default="./data/merged/Combined.csv",
         help="csv for train; csv for eval (same flag)",
     )
     parser.add_argument(
         "--checkpoint_path",
-        default="../checkpoints/BiLSTM_model.pth",
+        default="./checkpoints/BiLSTM_model.pth",
         help="checkpoint path for train save / eval load / chat load",
     )
 
@@ -50,7 +50,7 @@ def main():
     parser.add_argument("--max_grad_norm", type=float, default=1.0)
 
     # data / preprocessing
-    parser.add_argument("--stopwords_path", default="../data/stopwords.txt")
+    parser.add_argument("--stopwords_path", default="./data/stopwords.txt")
     parser.add_argument("--text_col", default="text")
     parser.add_argument("--label_col", default="label")
     parser.add_argument("--max_vocab", type=int, default=5000)
@@ -82,6 +82,23 @@ def main():
         choices=["mm", "en"],
         default="mm",
         help="eliza script language (chat mode)",
+    )
+    parser.add_argument(
+        "--chat_ui",
+        choices=["terminal", "streamlit", "custom_ui"],
+        default="terminal",
+        help="chat mode: terminal | streamlit | custom_ui",
+    )
+    parser.add_argument(
+        "--custom_ui_host",
+        default="127.0.0.1",
+        help="chat mode custom_ui only: bind address",
+    )
+    parser.add_argument(
+        "--custom_ui_port",
+        type=int,
+        default=8765,
+        help="chat mode custom_ui only: port",
     )
 
     args = parser.parse_args()
@@ -126,11 +143,26 @@ def main():
         )
     # run chat mode
     else:
-        run_chat(
-            checkpoint_path=args.checkpoint_path,
-            stopwords_path=args.stopwords_path,
-            language=args.language,
-        )
+        if args.chat_ui == "streamlit":
+            launch_streamlit_ui(
+                checkpoint_path=args.checkpoint_path,
+                stopwords_path=args.stopwords_path,
+                language=args.language,
+            )
+        elif args.chat_ui == "custom_ui":
+            launch_custom_ui(
+                checkpoint_path=args.checkpoint_path,
+                stopwords_path=args.stopwords_path,
+                language=args.language,
+                host=args.custom_ui_host,
+                port=args.custom_ui_port,
+            )
+        else:
+            run_chat(
+                checkpoint_path=args.checkpoint_path,
+                stopwords_path=args.stopwords_path,
+                language=args.language,
+            )
 
 
 # run the script

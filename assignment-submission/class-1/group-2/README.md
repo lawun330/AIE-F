@@ -88,6 +88,50 @@ python eliza/burmese_chat_ui.py --host 0.0.0.0 --port 9000 --model_path /path/to
 
 If no `.pth` checkpoint is available yet, the UI still works in rule-based mode and continues chatting in Burmese.
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    ┌─────────────────────────────────────────┐
+                    │  group2-hybrid-eliza.py --mode chat   │
+                    │  (--chat_ui terminal | streamlit |    │
+                    │   custom_ui)                            │
+                    └───────────────┬─────────────────────────┘
+                                    │
+         ┌──────────────────────────┼──────────────────────────┐
+         │                          │                          │
+         ▼                          ▼                          ▼
+   run_chat()              launch_streamlit_ui()      launch_custom_ui()
+   (chat.py)              (chat.py)                  (chat.py)
+         │                          │                          │
+         │ stdin/stdout             │ subprocess               │ subprocess
+         │ loop only                │                          │
+         │                          ▼                          ▼
+         │                   streamlit_chatter.py      custom_ui_chatter.py
+         │                   (separate process)        (separate process)
+         │                          │                          │
+         └──────────────────────────┴──────────────────────────┘
+                                    │
+                    shared logic lives ONLY in chat.py:
+                    load_chat_context(), chat_turn()
+                                    │
+                    ┌───────────────┴───────────────┐
+                    ▼                               ▼
+             eval.py (model)                  eliza.py (rules)
+
+
+
+
 ## Sources
 
 - Unicode Myanmar script blocks:
