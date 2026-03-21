@@ -234,7 +234,7 @@ def main():
         ## CHANGE HERE: change default values
         data_path="../data/merged/Combined.csv",
         checkpoint_path="../checkpoints/bilstm_smaller_params.pth",
-        epochs=100,
+        epochs=30,
         batch_size=32,
         val_split=0.2,
         max_len=50,

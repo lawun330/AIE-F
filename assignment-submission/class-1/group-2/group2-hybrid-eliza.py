@@ -39,7 +39,7 @@ def main():
     )
 
     # training loop
-    parser.add_argument("--epochs", type=int, default=100)
+    parser.add_argument("--epochs", type=int, default=30)
     parser.add_argument("--batch_size", type=int, default=32)
     parser.add_argument("--val_split", type=float, default=0.2)
     parser.add_argument("--max_len", type=int, default=50)
