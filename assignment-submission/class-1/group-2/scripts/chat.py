@@ -20,7 +20,7 @@ from src.eliza import Eliza
 
 
 # single defaults for train/eval/chat entry points (project root = parent of scripts/)
-DEFAULT_CHECKPOINT_PATH = "./checkpoints/bilstm_larger_params.pth"
+DEFAULT_CHECKPOINT_PATH = "./checkpoints/bilstm_larger_params_after_downsampl.pth"
 DEFAULT_STOPWORDS_PATH = "./data/stopwords.txt"
 
 

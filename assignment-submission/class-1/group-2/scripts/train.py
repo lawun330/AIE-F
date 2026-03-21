@@ -233,7 +233,7 @@ def main():
     run_train(
         ## CHANGE HERE: change default values
         data_path="../data/merged_preprocessed/data_after_downsampling.csv",
-        checkpoint_path="../checkpoints/bilstm_larger_params.pth",
+        checkpoint_path="../checkpoints/bilstm_larger_params_after_downsampl.pth",
         epochs=30,
         batch_size=32,
         val_split=0.2,
