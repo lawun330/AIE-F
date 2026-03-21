@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 
-"""Local HTTP chat UI (HTML/CSS from experiments/burmese_chat_ui.py) + modular BiLSTM + eliza (scripts/chat.py)."""
+"""Local HTTP chat UI + modular BiLSTM + eliza.
+
+This module depends on:
+- scripts/chat.py
+- experiments/burmese_chat_ui.py
+"""
 
 from __future__ import annotations
 

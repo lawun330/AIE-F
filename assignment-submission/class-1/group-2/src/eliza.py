@@ -1,4 +1,9 @@
-"""ELIZA-style rule engine: normalization, reflection, and keyword responses."""
+"""ELIZA-style rule engine: normalization, reflection, and keyword responses.
+
+This module depends on:
+- src/eliza_rules.py
+- src/preprocessing.py
+"""
 
 import copy
 import random

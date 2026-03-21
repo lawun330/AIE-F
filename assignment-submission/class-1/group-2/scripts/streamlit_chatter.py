@@ -1,4 +1,8 @@
-"""Streamlit UI for hybrid eliza + emotion model (uses scripts/chat.py helpers)."""
+"""Streamlit UI + modular BiLSTM + eliza.
+
+This module depends on:
+- scripts/chat.py
+"""
 
 import os
 import random

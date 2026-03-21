@@ -10,37 +10,51 @@ Our custom dataset comprises Facebook comments, synthetic data generated via gen
 - 4: ကြောက်ရွံ့မှု (fear)
 - 5: အံ့အားသင့်မှု (surprise)
 
+---
+
 ## Project Structure
+
+Run all CLI examples from the `group-2/` directory (repository root for this submission).
 
 ```
 group-2/
-├── group2-hybrid-eliza.py          # single CLI entry: --mode train|eval|chat
+├── group2-hybrid-eliza.py      # main CLI: --mode train | eval | chat
+├── pyproject.toml
+├── requirements.txt
+├── .python-version
 ├── data/
-│   ├── raw_ungrouped/              # original team contributions (not merged)
-│   ├── annotated_ungrouped/        # cleaned team contributions (not merged)
-│   ├── merged/                     # merged spreadsheets before final export
-│   ├── merged_preprocessed/        # final merged CSVs used for training
-│   │   ├── data_before_downsampling.csv
-│   │   └── data_after_downsampling.csv
-│   └── stopwords.txt               # Burmese stopword list (see Sources)
-├── checkpoints/                    # saved checkpoints and tokenizer/vocab artifacts
-├── notebooks/                      # experimental analysis and EDA
+│   ├── raw_ungrouped/          # original team files (not merged)
+│   ├── annotated_ungrouped/    # cleaned/labeled team files (not merged)
+│   ├── merged/                 # combined sheets
+│   ├── merged_preprocessed/    # combined sheets before/after downsampling
+│   └── stopwords.txt           # Burmese stopword list (see References)
+├── checkpoints/                # saved `.pth` bundles (weights + vocab + label maps)
+├── notebooks/                  # EDA and demos (e.g. Data Preprocessing, Model Training Demo)
 ├── scripts/
-│   ├── train.py                    # model training execution
-│   ├── eval.py                     # model evaluation/prediction
-│   └── chat.py                     # interactive inference; reuses eval helpers
-├── src/
-│   ├── preprocessing.py            # Unicode normalization, lowercase, tokenization (see Sources), char n-grams, stopwords
-│   ├── rabbit.py                   # Zawgyi to Unicode conversion utilities (see Sources)
-│   ├── vocab_builder.py            # vocab/token-id and label-id helpers
-│   ├── prep_data.py                # shared preprocessing helpers for train/eval/chat
-│   ├── eliza_rules.py              # ELIZA rule data
-│   ├── eliza.py                    # ELIZA engine
-│   └── model.py                    # LSTM architecture and layer definitions
-├── README.md                       # documentation
-├── environment.yaml                # conda environment configuration
-└── requirements.txt                # dependencies
+│   ├── train.py
+│   ├── eval.py
+│   ├── chat.py                 # shared chat logic; loads src/model.py + src/eliza.py
+│   ├── streamlit_chatter.py    # Streamlit UI (subprocess from chat.py)
+│   └── custom_ui_chatter.py    # browser UI (subprocess from chat.py + UI from experiments/burmese_chat_ui.py)
+├── experiments/                # early standalone hybrids, guides, logs, burmese_chat_ui.py
+└── src/
+    ├── preprocessing.py        # emotion pipeline: normalize, MMDT, stopwords, optional char n-grams
+    ├── rabbit.py               # Zawgyi to Unicode
+    ├── vocab_builder.py
+    ├── prep_data.py            # shared tensors/loaders for train / eval / chat encoding
+    ├── eliza_rules.py
+    ├── eliza.py                # rule engine (separate tokenization from emotion model)
+    └── model.py                # BiLSTM + attention classifier
 ```
+
+The following diagram summarizes the key components of our modular approach.
+
+<!-- Architecture Overview Diagram -->
+<p align="center">
+  <img src="img/mindmap.png" alt="Group 2 Project Architecture Overview"/>
+</p>
+
+---
 
 ## Project Flow
 
@@ -56,11 +70,11 @@ The code is organized so a single wrapper script controls the high-level mode, w
 
 - `src/eliza_rules.py`: rule data only, paired with `src/eliza.py`.
 
-- `src/eliza.py`: ELIZA dialogue behavior; it consumes `src/eliza_rules.py` and shares text-pattern handling with `src/preprocessing.py` where the two modules meet.
+- `src/eliza.py`: ELIZA dialogue behavior; it consumes `src/eliza_rules.py`. Rule matching uses `tokenize_for_rules` (no char n-grams); the emotion model uses `src/preprocessing.py` separately.
 
 - `src/prep_data.py`: shared data preparation for training and inference. It sits between the datasets/checkpoints and the emotion pipeline, and depends on `src/preprocessing.py` plus `src/vocab_builder.py`.
 
-- `src/preprocessing.py`: preprocessing for the **emotion model**. It depends on `src/rabbit.py` for script conversion and on external Myanmar tokenization libraries as noted under Sources. ELIZA-specific text handling is in `src/eliza.py` instead of here.
+- `src/preprocessing.py`: preprocessing for the **emotion model**. It depends on `src/rabbit.py` for script conversion and on external Myanmar tokenization libraries as noted under References.
 
 - `src/vocab_builder.py`: builds the vocabulary and fixed label order for the six emotion classes; used from `src/prep_data.py`.
 
@@ -70,80 +84,91 @@ The code is organized so a single wrapper script controls the high-level mode, w
 
 In short: `group2-hybrid-eliza.py` starts the run; `scripts/*.py` control train/eval/chat; `src/*.py` implements the reusable preprocessing/model utilities.
 
-## Standalone Burmese Chat UI
+---
 
-You can run a separate local browser chat UI for the Burmese Hybrid ELIZA bot with:
+## CLI Guide for `group2-hybrid-eliza.py`
 
-```bash
-python experiments/burmese_chat_ui.py
-```
+Run from `group-2/`.
 
-Then open `http://127.0.0.1:8765` in your browser.
+Modes: `--mode train`, `--mode eval`, `--mode chat`.
 
-Optional:
+Important flags (not exhaustive):
+- `--data_path`,
+- `--checkpoint_path` (read/write for train; read for eval/chat),
+- `--stopwords_path`,
+- `--epochs`,
+- `--batch_size`,
+- `--lr`,
+- `--embed_dim`,
+- `--hidden_dim`,
+- `--use_attention` / `--no-use_attention`,
+- `--use_char_ngrams` / `--no-use_char_ngrams`.
+- `--chat_ui`, `--language`, `--custom_ui_host`, `--custom_ui_port`.
 
-```bash
-python experiments/burmese_chat_ui.py --host 0.0.0.0 --port 9000 --model_path /path/to/eliza_eq_mm_lstm.pth
-```
+Defaults: training reads `./data/merged_preprocessed/data_after_downsampling.csv` and saves to `./checkpoints/bilstm_larger_params_after_downsampl.pth`.
 
-If no `.pth` checkpoint is available yet, the UI still works in rule-based mode and continues chatting in Burmese.
+---
 
+### Training Examples
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    ┌─────────────────────────────────────────┐
-                    │  group2-hybrid-eliza.py --mode chat   │
-                    │  (--chat_ui terminal | streamlit |    │
-                    │   custom_ui)                            │
-                    └───────────────┬─────────────────────────┘
-                                    │
-         ┌──────────────────────────┼──────────────────────────┐
-         │                          │                          │
-         ▼                          ▼                          ▼
-   run_chat()              launch_streamlit_ui()      launch_custom_ui()
-   (chat.py)              (chat.py)                  (chat.py)
-         │                          │                          │
-         │ stdin/stdout             │ subprocess               │ subprocess
-         │ loop only                │                          │
-         │                          ▼                          ▼
-         │                   streamlit_chatter.py      custom_ui_chatter.py
-         │                   (separate process)        (separate process)
-         │                          │                          │
-         └──────────────────────────┴──────────────────────────┘
-                                    │
-                    shared logic lives ONLY in chat.py:
-                    load_chat_context(), chat_turn()
-                                    │
-                    ┌───────────────┴───────────────┐
-                    ▼                               ▼
-             eval.py (model)                  eliza.py (rules)
-
-
-
-
-Train with default data file, parameters and output  to ddefault dir 
+**1. Default**
 ```bash
 python group2-hybrid-eliza.py --mode train
 ```
-this is what outputs ./checkpoints/bilstm_smaller_params.pth
+
+**2. Custom model shape & checkpoint name**
+```bash
+python group2-hybrid-eliza.py --mode train --embed_dim 512 --hidden_dim 256 --checkpoint_path ./checkpoints/bilstm_larger_params.pth
+```
+
+**3. Further customizations**  
+```bash
+python group2-hybrid-eliza.py --mode train --data_path ./data/merged/Combined.csv --embed_dim 128 --hidden_dim 96 --checkpoint_path ./checkpoints/bilstm_smaller_params_after_downsampl.pth
+```
+or
+```bash
+python group2-hybrid-eliza.py --mode train --data_path ./data/merged/Combined.csv --embed_dim 512 --hidden_dim 256 --checkpoint_path ./checkpoints/bilstm_larger_params.pth
+```
+
+---
+
+### Evaluation Example
+
+Uses the same `--data_path` and `--checkpoint_path` as training for a fair comparison.
 
 ```bash
-python group2-hybrid-eliza.py --mode train --embed
+python group2-hybrid-eliza.py --mode eval --data_path ./data/merged_preprocessed/data_after_downsampling.csv --checkpoint_path ./checkpoints/bilstm_larger_params_after_downsampl.pth
 ```
-bilstm_larger_params.pth
 
-## Sources
+---
+
+### Chat Example
+
+All use the same `scripts/chat.py` logic; only the front end changes. Override the model with `--checkpoint_path` (and `--stopwords_path` if needed).
+
+**Terminal (stdin/stdout)**
+
+```bash
+python group2-hybrid-eliza.py --mode chat --chat_ui terminal
+```
+
+**Streamlit**
+
+```bash
+python group2-hybrid-eliza.py --mode chat --chat_ui streamlit
+```
+
+**Custom browser UI**
+
+```bash
+python group2-hybrid-eliza.py --mode chat --chat_ui custom_ui
+```
+
+Optional: `--language en` or `--language mm`, `--custom_ui_host`, `--custom_ui_port`.
+
+---
+
+## References
 
 - Unicode Myanmar script blocks:
     - https://www.unicode.org/charts/PDF/U1000.pdf

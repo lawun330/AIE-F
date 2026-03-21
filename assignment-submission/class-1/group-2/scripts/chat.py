@@ -4,6 +4,7 @@
 
 This module depends on:
 - scripts/eval.py
+- src/eliza.py
 """
 
 from __future__ import annotations
