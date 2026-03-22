@@ -1,0 +1,9 @@
+pandas[excel]
+myanmartools
+mmdt-tokenizer
+torch
+scikit-learn
+seaborn
+matplotlib
+streamlit
+python=>3.12

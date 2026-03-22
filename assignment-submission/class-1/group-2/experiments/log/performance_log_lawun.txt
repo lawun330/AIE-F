@@ -1,0 +1,757 @@
+BILSTM / NO-ATTENTION / NO-NGRAMS
+
+epochs = 100
+batch_size = 32
+val_split = 0.2
+max_len = 50
+lr = 0.001
+seed = 42
+weight_decay = 1e-5
+patience = 4
+max_grad_norm = 1.0
+embed_dim = 512
+hidden_dim = 256
+num_layers = 2
+dropout = 0.2
+pad_idx = 0
+
+--no-use_char_ngrams
+--no-use_attention
+
+>>>python group2-hybrid-eliza.py --mode train --no-use_attention
+data: 1507 rows in file, 1507 after cleaning, train=1206 val=301 (val_split=0.2, batch_size=32)
+[shapes] train batch: x (32, 50), y (32,), lengths (32,)
+[shapes] val batch: x (32, 50), y (32,), lengths (32,)
+Using device: cuda
+GPU device name: NVIDIA GeForce GTX 1060, count: 1
+Epoch 1/100 | Loss: 1.6780 | Val Acc: 39.20%
+Epoch 2/100 | Loss: 0.9439 | Val Acc: 43.19%
+Epoch 3/100 | Loss: 0.3675 | Val Acc: 45.51%
+Epoch 4/100 | Loss: 0.1280 | Val Acc: 47.51%
+Epoch 5/100 | Loss: 0.0310 | Val Acc: 47.51%
+Epoch 6/100 | Loss: 0.0182 | Val Acc: 46.18%
+Epoch 7/100 | Loss: 0.0064 | Val Acc: 46.18%
+Epoch 8/100 | Loss: 0.0081 | Val Acc: 45.51%
+[*] Early stopping at epoch 8. Best Val Acc: 47.51%
+
+=============================================================================================
+
+BILSTM / ATTENTION / NO-NGRAMS
+
+epochs = 100
+batch_size = 32
+val_split = 0.2
+max_len = 50
+lr = 0.001
+seed = 42
+weight_decay = 1e-5
+patience = 4
+max_grad_norm = 1.0
+embed_dim = 512
+hidden_dim = 256
+num_layers = 2
+dropout = 0.2
+pad_idx = 0
+
+--no-use_char_ngrams
+--use_attention
+
+>>>python group2-hybrid-eliza.py --mode train
+data: 1507 rows in file, 1507 after cleaning, train=1206 val=301 (val_split=0.2, batch_size=32)
+[shapes] train batch: x (32, 50), y (32,), lengths (32,)
+[shapes] val batch: x (32, 50), y (32,), lengths (32,)
+Using device: cuda
+GPU device name: NVIDIA GeForce GTX 1060, count: 1
+Epoch 1/100 | Loss: 1.6857 | Val Acc: 38.54%
+Epoch 2/100 | Loss: 0.9317 | Val Acc: 44.85%
+Epoch 3/100 | Loss: 0.2905 | Val Acc: 44.85%
+Epoch 4/100 | Loss: 0.0944 | Val Acc: 43.85%
+Epoch 5/100 | Loss: 0.0429 | Val Acc: 46.18%
+Epoch 6/100 | Loss: 0.0262 | Val Acc: 45.51%
+Epoch 7/100 | Loss: 0.0149 | Val Acc: 44.19%
+Epoch 8/100 | Loss: 0.0130 | Val Acc: 44.85%
+Epoch 9/100 | Loss: 0.0129 | Val Acc: 43.52%
+[*] Early stopping at epoch 9. Best Val Acc: 46.18%
+
+=============================================================================================
+
+BILSTM / NO ATTENTION / NGRAMS
+
+epochs = 100
+batch_size = 32
+val_split = 0.2
+max_len = 50
+lr = 0.001
+seed = 42
+weight_decay = 1e-5
+patience = 4
+max_grad_norm = 1.0
+embed_dim = 512
+hidden_dim = 256
+num_layers = 2
+dropout = 0.2
+pad_idx = 0
+
+--use_char_ngrams
+ngram_min = 2
+ngram_max = 3
+--no-use_attention
+
+>>>python group2-hybrid-eliza.py --mode train --use_char_ngrams --ngram_min 2 --ngram_max 3 --no-use_attention
+data: 1507 rows in file, 1507 after cleaning, train=1206 val=301 (val_split=0.2, batch_size=32)
+[shapes] train batch: x (32, 50), y (32,), lengths (32,)
+[shapes] val batch: x (32, 50), y (32,), lengths (32,)
+Using device: cuda
+GPU device name: NVIDIA GeForce GTX 1060, count: 1
+Epoch 1/100 | Loss: 1.6840 | Val Acc: 34.55%
+Epoch 2/100 | Loss: 0.9906 | Val Acc: 50.83%
+Epoch 3/100 | Loss: 0.4125 | Val Acc: 53.82%
+Epoch 4/100 | Loss: 0.1499 | Val Acc: 53.49%
+Epoch 5/100 | Loss: 0.0501 | Val Acc: 49.83%
+Epoch 6/100 | Loss: 0.0361 | Val Acc: 51.50%
+Epoch 7/100 | Loss: 0.0181 | Val Acc: 52.82%
+[*] Early stopping at epoch 7. Best Val Acc: 53.82%
+
+=============================================================================================
+
+BILSTM / ATTENTION / NGRAMS
+
+epochs = 100
+batch_size = 32
+val_split = 0.2
+max_len = 50
+lr = 0.001
+seed = 42
+weight_decay = 1e-5
+patience = 4
+max_grad_norm = 1.0
+embed_dim = 512
+hidden_dim = 256
+num_layers = 2
+dropout = 0.2
+pad_idx = 0
+
+--use_attention
+--use_char_ngrams
+ngram_min = 2
+ngram_max = 3
+
+>>>python group2-hybrid-eliza.py --mode train --use_char_ngrams --ngram_min 2 --ngram_max 3
+data: 1507 rows in file, 1507 after cleaning, train=1206 val=301 (val_split=0.2, batch_size=32)
+[shapes] train batch: x (32, 50), y (32,), lengths (32,)
+[shapes] val batch: x (32, 50), y (32,), lengths (32,)
+Using device: cuda
+GPU device name: NVIDIA GeForce GTX 1060, count: 1
+Epoch 1/100 | Loss: 1.6073 | Val Acc: 44.85%
+Epoch 2/100 | Loss: 1.0039 | Val Acc: 59.14%
+Epoch 3/100 | Loss: 0.5514 | Val Acc: 56.81%
+Epoch 4/100 | Loss: 0.2339 | Val Acc: 57.14%
+Epoch 5/100 | Loss: 0.1057 | Val Acc: 57.14%
+Epoch 6/100 | Loss: 0.0658 | Val Acc: 58.14%
+[*] Early stopping at epoch 6. Best Val Acc: 59.14%
+
+=============================================================================================
+
+BILSTM / ATTENTION / NO-NGRAMS (tuned: 256/128 embed/hidden, wd 1e-3, lr 5e-4, patience 10)
+
+epochs = 100
+batch_size = 32
+val_split = 0.2
+max_len = 50
+lr = 5e-4
+seed = 42
+weight_decay = 1e-3
+patience = 10
+max_grad_norm = 1.0
+embed_dim = 256
+hidden_dim = 128
+num_layers = 2
+dropout = 0.3
+pad_idx = 0
+
+data_path = ./data/merged/Combined.csv
+
+--use_attention
+--no-use_char_ngrams
+
+>>>python group2-hybrid-eliza.py --mode train --data_path ./data/merged/Combined.csv --embed_dim 256 --hidden_dim 128 --dropout 0.3 --weight_decay 1e-3 --lr 5e-4 --patience 10 --use_attention --no-use_char_ngrams
+data: 1507 rows in file, 1507 after cleaning, train=1206 val=301 (val_split=0.2, batch_size=32)
+[shapes] train batch: x (32, 50), y (32,), lengths (32,)
+[shapes] val batch: x (32, 50), y (32,), lengths (32,)
+Using device: cuda
+GPU device name: NVIDIA GeForce GTX 1060, count: 1
+Epoch 1/100 | Loss: 1.7831 | Val Acc: 28.90%
+Epoch 2/100 | Loss: 1.7297 | Val Acc: 32.56%
+Epoch 3/100 | Loss: 1.5858 | Val Acc: 33.22%
+Epoch 4/100 | Loss: 1.3049 | Val Acc: 33.89%
+Epoch 5/100 | Loss: 0.9649 | Val Acc: 35.88%
+Epoch 6/100 | Loss: 0.6587 | Val Acc: 36.88%
+Epoch 7/100 | Loss: 0.4686 | Val Acc: 36.54%
+Epoch 8/100 | Loss: 0.3407 | Val Acc: 37.87%
+Epoch 9/100 | Loss: 0.2484 | Val Acc: 37.54%
+Epoch 10/100 | Loss: 0.1751 | Val Acc: 35.88%
+Epoch 11/100 | Loss: 0.1482 | Val Acc: 38.54%
+Epoch 12/100 | Loss: 0.1457 | Val Acc: 38.54%
+Epoch 13/100 | Loss: 0.1184 | Val Acc: 38.87%
+Epoch 14/100 | Loss: 0.0953 | Val Acc: 37.87%
+Epoch 15/100 | Loss: 0.0960 | Val Acc: 37.21%
+Epoch 16/100 | Loss: 0.1068 | Val Acc: 39.53%
+Epoch 17/100 | Loss: 0.0868 | Val Acc: 38.87%
+Epoch 18/100 | Loss: 0.0801 | Val Acc: 36.21%
+Epoch 19/100 | Loss: 0.0607 | Val Acc: 36.21%
+Epoch 20/100 | Loss: 0.0676 | Val Acc: 36.21%
+Epoch 21/100 | Loss: 0.0782 | Val Acc: 35.88%
+Epoch 22/100 | Loss: 0.0788 | Val Acc: 36.54%
+Epoch 23/100 | Loss: 0.1063 | Val Acc: 36.88%
+Epoch 24/100 | Loss: 0.0769 | Val Acc: 34.88%
+Epoch 25/100 | Loss: 0.0687 | Val Acc: 34.55%
+Epoch 26/100 | Loss: 0.0566 | Val Acc: 35.88%
+[*] Early stopping at epoch 26. Best Val Acc: 39.53%
+
+=============================================================================================
+
+BILSTM / ATTENTION / NGRAMS (tuned: 256/128 embed/hidden, wd 1e-3, lr 5e-4, patience 10)
+
+epochs = 100
+batch_size = 32
+val_split = 0.2
+max_len = 50
+lr = 5e-4
+seed = 42
+weight_decay = 1e-3
+patience = 10
+max_grad_norm = 1.0
+embed_dim = 256
+hidden_dim = 128
+num_layers = 2
+dropout = 0.3
+pad_idx = 0
+
+data_path = ./data/merged/Combined.csv
+
+--use_attention
+--use_char_ngrams
+ngram_min = 2
+ngram_max = 3
+
+>>>python group2-hybrid-eliza.py --mode train --data_path ./data/merged/Combined.csv --embed_dim 256 --hidden_dim 128 --dropout 0.3 --weight_decay 1e-3 --lr 5e-4 --patience 10 --use_attention --use_char_ngrams --ngram_min 2 --ngram_max 3
+data: 1507 rows in file, 1507 after cleaning, train=1206 val=301 (val_split=0.2, batch_size=32)
+[shapes] train batch: x (32, 50), y (32,), lengths (32,)
+[shapes] val batch: x (32, 50), y (32,), lengths (32,)
+Using device: cuda
+GPU device name: NVIDIA GeForce GTX 1060, count: 1
+Epoch 1/100 | Loss: 1.7859 | Val Acc: 34.22%
+Epoch 2/100 | Loss: 1.7338 | Val Acc: 40.20%
+Epoch 3/100 | Loss: 1.4606 | Val Acc: 45.85%
+Epoch 4/100 | Loss: 1.0878 | Val Acc: 49.83%
+Epoch 5/100 | Loss: 0.8399 | Val Acc: 53.16%
+Epoch 6/100 | Loss: 0.6475 | Val Acc: 48.84%
+Epoch 7/100 | Loss: 0.4949 | Val Acc: 54.15%
+Epoch 8/100 | Loss: 0.4117 | Val Acc: 55.48%
+Epoch 9/100 | Loss: 0.3330 | Val Acc: 52.49%
+Epoch 10/100 | Loss: 0.2604 | Val Acc: 52.16%
+Epoch 11/100 | Loss: 0.2127 | Val Acc: 53.49%
+Epoch 12/100 | Loss: 0.1639 | Val Acc: 53.16%
+Epoch 13/100 | Loss: 0.1605 | Val Acc: 53.49%
+Epoch 14/100 | Loss: 0.1409 | Val Acc: 51.16%
+Epoch 15/100 | Loss: 0.1337 | Val Acc: 52.16%
+Epoch 16/100 | Loss: 0.1520 | Val Acc: 49.50%
+Epoch 17/100 | Loss: 0.1247 | Val Acc: 54.49%
+Epoch 18/100 | Loss: 0.0730 | Val Acc: 53.49%
+[*] Early stopping at epoch 18. Best Val Acc: 55.48%
+
+=============================================================================================
+
+BILSTM / NO-ATTENTION / NGRAMS (tuned: 256/128 embed/hidden, wd 1e-3, lr 5e-4, patience 10)
+
+epochs = 100
+batch_size = 32
+val_split = 0.2
+max_len = 50
+lr = 5e-4
+seed = 42
+weight_decay = 1e-3
+patience = 10
+max_grad_norm = 1.0
+embed_dim = 256
+hidden_dim = 128
+num_layers = 2
+dropout = 0.3
+pad_idx = 0
+
+data_path = ./data/merged/Combined.csv
+
+--no-use_attention
+--use_char_ngrams
+ngram_min = 2
+ngram_max = 3
+
+>>>python group2-hybrid-eliza.py --mode train --data_path ./data/merged/Combined.csv --embed_dim 256 --hidden_dim 128 --dropout 0.3 --weight_decay 1e-3 --lr 5e-4 --patience 10 --no-use_attention --use_char_ngrams --ngram_min 2 --ngram_max 3
+data: 1507 rows in file, 1507 after cleaning, train=1206 val=301 (val_split=0.2, batch_size=32)
+[shapes] train batch: x (32, 50), y (32,), lengths (32,)
+[shapes] val batch: x (32, 50), y (32,), lengths (32,)
+Using device: cuda
+GPU device name: NVIDIA GeForce GTX 1060, count: 1
+Epoch 1/100 | Loss: 1.7798 | Val Acc: 31.56%
+Epoch 2/100 | Loss: 1.7131 | Val Acc: 36.54%
+Epoch 3/100 | Loss: 1.5214 | Val Acc: 33.22%
+Epoch 4/100 | Loss: 1.2421 | Val Acc: 41.86%
+Epoch 5/100 | Loss: 0.9242 | Val Acc: 46.51%
+Epoch 6/100 | Loss: 0.6664 | Val Acc: 48.50%
+Epoch 7/100 | Loss: 0.5129 | Val Acc: 46.84%
+Epoch 8/100 | Loss: 0.3635 | Val Acc: 47.51%
+Epoch 9/100 | Loss: 0.2599 | Val Acc: 50.50%
+Epoch 10/100 | Loss: 0.1821 | Val Acc: 50.17%
+Epoch 11/100 | Loss: 0.1333 | Val Acc: 49.83%
+Epoch 12/100 | Loss: 0.1024 | Val Acc: 48.84%
+Epoch 13/100 | Loss: 0.0829 | Val Acc: 47.51%
+Epoch 14/100 | Loss: 0.0759 | Val Acc: 49.83%
+Epoch 15/100 | Loss: 0.0768 | Val Acc: 48.84%
+Epoch 16/100 | Loss: 0.0529 | Val Acc: 44.19%
+Epoch 17/100 | Loss: 0.0579 | Val Acc: 44.85%
+Epoch 18/100 | Loss: 0.0436 | Val Acc: 48.17%
+Epoch 19/100 | Loss: 0.0520 | Val Acc: 47.84%
+[*] Early stopping at epoch 19. Best Val Acc: 50.50%
+
+=============================================================================================
+
+BILSTM / ATTENTION / NGRAMS (tuned: 128/128 embed/hidden, dropout 0.4, lr 2e-4, patience 15)
+
+epochs = 100
+batch_size = 32
+val_split = 0.2
+max_len = 50
+lr = 2e-4
+seed = 42
+weight_decay = 1e-3
+patience = 15
+max_grad_norm = 1.0
+embed_dim = 128
+hidden_dim = 128
+num_layers = 2
+dropout = 0.4
+pad_idx = 0
+
+data_path = ./data/merged/Combined.csv
+
+--use_attention
+--use_char_ngrams
+ngram_min = 2
+ngram_max = 3
+
+>>>python group2-hybrid-eliza.py --mode train --data_path ./data/merged/Combined.csv --embed_dim 128 --hidden_dim 128 --dropout 0.4 --weight_decay 1e-3 --lr 2e-4 --patience 15 --use_attention --use_char_ngrams --ngram_min 2 --ngram_max 3
+data: 1507 rows in file, 1507 after cleaning, train=1206 val=301 (val_split=0.2, batch_size=32)
+[shapes] train batch: x (32, 50), y (32,), lengths (32,)
+[shapes] val batch: x (32, 50), y (32,), lengths (32,)
+Using device: cuda
+GPU device name: NVIDIA GeForce GTX 1060, count: 1
+Epoch 1/100 | Loss: 1.7918 | Val Acc: 22.59%
+Epoch 2/100 | Loss: 1.7846 | Val Acc: 27.57%
+Epoch 3/100 | Loss: 1.7769 | Val Acc: 33.55%
+Epoch 4/100 | Loss: 1.7639 | Val Acc: 35.55%
+Epoch 5/100 | Loss: 1.7332 | Val Acc: 36.21%
+Epoch 6/100 | Loss: 1.6309 | Val Acc: 35.55%
+Epoch 7/100 | Loss: 1.4415 | Val Acc: 35.22%
+Epoch 8/100 | Loss: 1.2904 | Val Acc: 41.86%
+Epoch 9/100 | Loss: 1.1918 | Val Acc: 43.85%
+Epoch 10/100 | Loss: 1.1026 | Val Acc: 44.52%
+Epoch 11/100 | Loss: 1.0277 | Val Acc: 45.51%
+Epoch 12/100 | Loss: 0.9687 | Val Acc: 47.18%
+Epoch 13/100 | Loss: 0.8990 | Val Acc: 48.50%
+Epoch 14/100 | Loss: 0.8534 | Val Acc: 48.17%
+Epoch 15/100 | Loss: 0.7972 | Val Acc: 50.17%
+Epoch 16/100 | Loss: 0.7442 | Val Acc: 48.50%
+Epoch 17/100 | Loss: 0.7123 | Val Acc: 51.50%
+Epoch 18/100 | Loss: 0.6798 | Val Acc: 52.82%
+Epoch 19/100 | Loss: 0.6212 | Val Acc: 51.50%
+Epoch 20/100 | Loss: 0.6095 | Val Acc: 51.50%
+Epoch 21/100 | Loss: 0.5723 | Val Acc: 49.83%
+Epoch 22/100 | Loss: 0.5534 | Val Acc: 51.83%
+Epoch 23/100 | Loss: 0.5123 | Val Acc: 52.16%
+Epoch 24/100 | Loss: 0.4827 | Val Acc: 48.50%
+Epoch 25/100 | Loss: 0.4900 | Val Acc: 52.82%
+Epoch 26/100 | Loss: 0.4396 | Val Acc: 51.16%
+Epoch 27/100 | Loss: 0.4404 | Val Acc: 51.83%
+Epoch 28/100 | Loss: 0.4177 | Val Acc: 50.17%
+Epoch 29/100 | Loss: 0.3947 | Val Acc: 49.83%
+Epoch 30/100 | Loss: 0.4352 | Val Acc: 50.83%
+Epoch 31/100 | Loss: 0.3619 | Val Acc: 49.50%
+Epoch 32/100 | Loss: 0.3443 | Val Acc: 52.82%
+Epoch 33/100 | Loss: 0.3261 | Val Acc: 49.83%
+[*] Early stopping at epoch 33. Best Val Acc: 52.82%
+
+=============================================================================================
+
+BILSTM / ATTENTION / NGRAMS (tuned: 128/128 embed/hidden, num_layers = 1, dropout 0.4, lr 2e-4, patience 15)
+
+epochs = 100
+batch_size = 32
+val_split = 0.2
+max_len = 50
+lr = 2e-4
+seed = 42
+weight_decay = 1e-3
+patience = 15
+max_grad_norm = 1.0
+embed_dim = 128
+hidden_dim = 128
+num_layers = 1
+dropout = 0.4
+pad_idx = 0
+
+data_path = ./data/merged/Combined.csv
+
+--use_attention
+--use_char_ngrams
+ngram_min = 2
+ngram_max = 3
+
+>>>python group2-hybrid-eliza.py --mode train --data_path ./data/merged/Com
+bined.csv --embed_dim 128 --hidden_dim 128 --dropout 0.4 --weight_decay 1e-3 --lr 2e-4 --patience 15 --use_attention --use_char_ngrams --ngram_min 2 --ngram_max 3 --num_layer 1
+data: 1507 rows in file, 1507 after cleaning, train=1206 val=301 (val_split=0.2, batch_size=32)
+[shapes] train batch: x (32, 50), y (32,), lengths (32,)
+[shapes] val batch: x (32, 50), y (32,), lengths (32,)
+Using device: cuda
+GPU device name: NVIDIA GeForce GTX 1060, count: 1
+Epoch 1/100 | Loss: 1.7881 | Val Acc: 30.56%
+Epoch 2/100 | Loss: 1.7762 | Val Acc: 34.22%
+Epoch 3/100 | Loss: 1.7637 | Val Acc: 35.88%
+Epoch 4/100 | Loss: 1.7504 | Val Acc: 38.21%
+Epoch 5/100 | Loss: 1.7331 | Val Acc: 36.21%
+Epoch 6/100 | Loss: 1.7040 | Val Acc: 36.88%
+Epoch 7/100 | Loss: 1.6527 | Val Acc: 39.20%
+Epoch 8/100 | Loss: 1.5562 | Val Acc: 39.53%
+Epoch 9/100 | Loss: 1.4192 | Val Acc: 40.20%
+Epoch 10/100 | Loss: 1.2757 | Val Acc: 44.19%
+Epoch 11/100 | Loss: 1.1749 | Val Acc: 49.50%
+Epoch 12/100 | Loss: 1.0803 | Val Acc: 47.18%
+Epoch 13/100 | Loss: 1.0068 | Val Acc: 46.18%
+Epoch 14/100 | Loss: 0.9430 | Val Acc: 47.84%
+Epoch 15/100 | Loss: 0.8874 | Val Acc: 47.84%
+Epoch 16/100 | Loss: 0.8321 | Val Acc: 49.83%
+Epoch 17/100 | Loss: 0.8154 | Val Acc: 46.18%
+Epoch 18/100 | Loss: 0.7608 | Val Acc: 47.84%
+Epoch 19/100 | Loss: 0.7299 | Val Acc: 50.17%
+Epoch 20/100 | Loss: 0.6913 | Val Acc: 48.50%
+Epoch 21/100 | Loss: 0.6580 | Val Acc: 49.17%
+Epoch 22/100 | Loss: 0.6252 | Val Acc: 42.19%
+Epoch 23/100 | Loss: 0.6184 | Val Acc: 47.18%
+Epoch 24/100 | Loss: 0.5789 | Val Acc: 45.51%
+Epoch 25/100 | Loss: 0.5606 | Val Acc: 46.51%
+Epoch 26/100 | Loss: 0.5254 | Val Acc: 48.50%
+Epoch 27/100 | Loss: 0.5294 | Val Acc: 44.85%
+Epoch 28/100 | Loss: 0.4974 | Val Acc: 44.52%
+Epoch 29/100 | Loss: 0.4904 | Val Acc: 45.51%
+Epoch 30/100 | Loss: 0.4500 | Val Acc: 47.51%
+Epoch 31/100 | Loss: 0.4389 | Val Acc: 42.19%
+Epoch 32/100 | Loss: 0.4488 | Val Acc: 43.85%
+Epoch 33/100 | Loss: 0.4018 | Val Acc: 45.85%
+Epoch 34/100 | Loss: 0.3714 | Val Acc: 43.52%
+[*] Early stopping at epoch 34. Best Val Acc: 50.17%
+
+=============================================================================================
+
+BILSTM / ATTENTION / NGRAMS (ngram 2–3)
+
+epochs = 20
+batch_size = 32
+val_split = 0.2
+max_len = 50
+lr = 0.001
+seed = 42
+weight_decay = 1e-5
+patience = 4
+max_grad_norm = 1.0
+embed_dim = 512
+hidden_dim = 256
+num_layers = 2
+dropout = 0.3
+pad_idx = 0
+
+--use_attention
+--use_char_ngrams
+ngram_min = 2
+ngram_max = 3
+
+>>>python group2-hybrid-eliza.py --mode train --data_path ./data/merged/Combined.csv --epochs 20 --batch_size 32 --val_split 0.2 --max_len 50 --lr 0.001 --weight_decay 1e-5 --patience 4 --embed_dim 512 --hidden_dim 256 --num_layers 2 --dropout 0.3 --use_attention --use_char_ngrams --ngram_min 2 --ngram_max 3
+data: 1507 rows in file, 1507 after cleaning, train=1206 val=301 (val_split=0.2, batch_size=32)
+[shapes] train batch: x (32, 50), y (32,), lengths (32,)
+[shapes] val batch: x (32, 50), y (32,), lengths (32,)
+Using device: cuda
+GPU device name: NVIDIA GeForce GTX 1060, count: 1
+Epoch 1/20 | Loss: 1.6149 | Val Acc: 43.52%
+Epoch 2/20 | Loss: 1.0410 | Val Acc: 57.48%
+Epoch 3/20 | Loss: 0.5682 | Val Acc: 56.81%
+Epoch 4/20 | Loss: 0.2512 | Val Acc: 55.81%
+Epoch 5/20 | Loss: 0.1323 | Val Acc: 54.49%
+Epoch 6/20 | Loss: 0.0879 | Val Acc: 54.15%
+[*] Early stopping at epoch 6. Best Val Acc: 57.48%
+
+=============================================================================================
+
+>>>>>>>BEST SETUP SO FAR (LARGE)
+
+BILSTM / ATTENTION / NGRAMS (ngram 2–2 only)
+
+epochs = 20
+batch_size = 32
+val_split = 0.2
+max_len = 50
+lr = 0.001
+seed = 42
+weight_decay = 1e-5
+patience = 4
+max_grad_norm = 1.0
+embed_dim = 512
+hidden_dim = 256
+num_layers = 2
+dropout = 0.3
+pad_idx = 0
+
+--use_attention
+--use_char_ngrams
+ngram_min = 2
+ngram_max = 2
+
+>>>python group2-hybrid-eliza.py --mode train --data_path ./data/merged/Combined.csv --epochs 20 --batch_size 32 --val_split 0.2 --max_len 50 --lr 0.001 --weight_decay 1e-5 --patience 4 --embed_dim 512 --hidden_dim 256 --num_layers 2 --dropout 0.3 --use_attention --use_char_ngrams --ngram_min 2 --ngram_max 2
+data: 1507 rows in file, 1507 after cleaning, train=1206 val=301 (val_split=0.2, batch_size=32)
+[shapes] train batch: x (32, 50), y (32,), lengths (32,)
+[shapes] val batch: x (32, 50), y (32,), lengths (32,)
+Using device: cuda
+GPU device name: NVIDIA GeForce GTX 1060, count: 1
+Epoch 1/20 | Loss: 1.5731 | Val Acc: 48.17%
+Epoch 2/20 | Loss: 0.9691 | Val Acc: 56.48%
+Epoch 3/20 | Loss: 0.5289 | Val Acc: 56.15%
+Epoch 4/20 | Loss: 0.2476 | Val Acc: 55.81%
+Epoch 5/20 | Loss: 0.1166 | Val Acc: 57.14%
+Epoch 6/20 | Loss: 0.0515 | Val Acc: 54.82%
+Epoch 7/20 | Loss: 0.0474 | Val Acc: 58.80%
+Epoch 8/20 | Loss: 0.0391 | Val Acc: 57.14%
+Epoch 9/20 | Loss: 0.0312 | Val Acc: 57.81%
+Epoch 10/20 | Loss: 0.0242 | Val Acc: 61.13%
+Epoch 11/20 | Loss: 0.0145 | Val Acc: 57.48%
+Epoch 12/20 | Loss: 0.0054 | Val Acc: 58.80%
+Epoch 13/20 | Loss: 0.0022 | Val Acc: 58.80%
+Epoch 14/20 | Loss: 0.0011 | Val Acc: 58.14%
+[*] Early stopping at epoch 14. Best Val Acc: 61.13%
+
+----SAME SETUP WITH DIFFERENT DATASOURCE 1 BELOW----
+
+>>>python group2-hybrid-eliza.py --mode train --data_path ./data/merged_preprocessed/data_after_downsampling.csv --epochs 20 --batch_size 32 --val_split 0.2 --max_len 50 --lr 0.001 --weight_decay 1e-5 --patience 4 --embed_dim 512 --hidden_dim 256 --num_layers 2 --dropout 0.3 --use_attention --use_char_ngrams --ngram_min 2 --ngram_max 2
+data: 1044 rows in file, 1044 after cleaning, train=834 val=210 (val_split=0.2, batch_size=32)
+[shapes] train batch: x (32, 50), y (32,), lengths (32,)
+[shapes] val batch: x (32, 50), y (32,), lengths (32,)
+Using device: cuda
+GPU device name: NVIDIA GeForce GTX 1060, count: 1
+Epoch 1/20 | Loss: 1.6842 | Val Acc: 45.24%
+Epoch 2/20 | Loss: 1.0743 | Val Acc: 53.81%
+Epoch 3/20 | Loss: 0.6154 | Val Acc: 56.19%
+Epoch 4/20 | Loss: 0.2532 | Val Acc: 56.67%
+Epoch 5/20 | Loss: 0.1310 | Val Acc: 57.62%
+Epoch 6/20 | Loss: 0.0873 | Val Acc: 55.24%
+Epoch 7/20 | Loss: 0.0593 | Val Acc: 60.00%
+Epoch 8/20 | Loss: 0.0485 | Val Acc: 56.67%
+Epoch 9/20 | Loss: 0.0205 | Val Acc: 55.24%
+Epoch 10/20 | Loss: 0.0176 | Val Acc: 52.86%
+Epoch 11/20 | Loss: 0.0070 | Val Acc: 58.10%
+[*] Early stopping at epoch 11. Best Val Acc: 60.00%
+
+----SAME SETUP WITH DIFFERENT DATASOURCE 2 BELOW----
+
+>>>python group2-hybrid-eliza.py --mode train --data_path ./data/merged_preprocessed/data_before_downsampling.csv --epochs 20 --batch_size 32 --val_split 0.2 --max_len 50 --lr 0.001 --weight_decay 1e-5 --patience 4 --embed_dim 512 --hidden_dim 256 --num_layers 2 --dropout 0.3 --use_attention --use_char_ngrams --ngram_min 2 --ngram_max 2
+data: 1495 rows in file, 1495 after cleaning, train=1196 val=299 (val_split=0.2, batch_size=32)
+[shapes] train batch: x (32, 50), y (32,), lengths (32,)
+[shapes] val batch: x (32, 50), y (32,), lengths (32,)
+Using device: cuda
+GPU device name: NVIDIA GeForce GTX 1060, count: 1
+Epoch 1/20 | Loss: 1.5874 | Val Acc: 44.48%
+Epoch 2/20 | Loss: 0.9970 | Val Acc: 56.86%
+Epoch 3/20 | Loss: 0.5951 | Val Acc: 59.53%
+Epoch 4/20 | Loss: 0.2714 | Val Acc: 59.20%
+Epoch 5/20 | Loss: 0.1184 | Val Acc: 58.86%
+Epoch 6/20 | Loss: 0.0843 | Val Acc: 60.20%
+Epoch 7/20 | Loss: 0.0423 | Val Acc: 60.20%
+Epoch 8/20 | Loss: 0.0582 | Val Acc: 59.87%
+Epoch 9/20 | Loss: 0.0255 | Val Acc: 56.19%
+Epoch 10/20 | Loss: 0.0448 | Val Acc: 57.19%
+[*] Early stopping at epoch 10. Best Val Acc: 60.20%
+
+=============================================================================================
+
+>>>>>>>BEST SETUP SO FAR (SMALLER)
+
+>>>python group2-hybrid-eliza.py --mode train --data_path ./data/merged/Combined.csv --epochs 100 --batch_size 32 --val_split 0.2 --max_len 50 --lr 5e-4 --seed 42 --weight_decay 1e-3 --patience 10 --max_grad_norm 1.0 --embed_dim 256 --hidden_dim 128 --num_layers 2 --dropout 0.3 --pad_idx 0 --use_attention --use_char_ngrams --ngram_min 2 --ngram_max 2
+data: 1507 rows in file, 1507 after cleaning, train=1206 val=301 (val_split=0.2, batch_size=32)
+[shapes] train batch: x (32, 50), y (32,), lengths (32,)
+[shapes] val batch: x (32, 50), y (32,), lengths (32,)
+Using device: cuda
+GPU device name: NVIDIA GeForce GTX 1060, count: 1
+Epoch 1/100 | Loss: 1.7776 | Val Acc: 36.21%
+Epoch 2/100 | Loss: 1.6588 | Val Acc: 26.58%
+Epoch 3/100 | Loss: 1.3915 | Val Acc: 42.19%
+Epoch 4/100 | Loss: 1.0783 | Val Acc: 45.51%
+Epoch 5/100 | Loss: 0.8059 | Val Acc: 55.81%
+Epoch 6/100 | Loss: 0.5986 | Val Acc: 52.49%
+Epoch 7/100 | Loss: 0.5030 | Val Acc: 56.48%
+Epoch 8/100 | Loss: 0.3714 | Val Acc: 57.14%
+Epoch 9/100 | Loss: 0.3220 | Val Acc: 55.81%
+Epoch 10/100 | Loss: 0.2543 | Val Acc: 56.48%
+Epoch 11/100 | Loss: 0.2056 | Val Acc: 53.16%
+Epoch 12/100 | Loss: 0.1872 | Val Acc: 56.15%
+Epoch 13/100 | Loss: 0.1615 | Val Acc: 53.16%
+Epoch 14/100 | Loss: 0.1607 | Val Acc: 55.48%
+Epoch 15/100 | Loss: 0.1333 | Val Acc: 53.82%
+Epoch 16/100 | Loss: 0.1170 | Val Acc: 56.81%
+Epoch 17/100 | Loss: 0.1457 | Val Acc: 52.49%
+Epoch 18/100 | Loss: 0.1231 | Val Acc: 52.16%
+[*] Early stopping at epoch 18. Best Val Acc: 57.14%
+
+----SAME SETUP WITH DIFFERENT DATASOURCE 1 BELOW----
+
+>>>python group2-hybrid-eliza.py --mode train --data_path ./data/merged_preprocessed/data_before_downsampling.csv --epochs 100 --batch_size 32 --val_split 0.2 --max_len 50 --lr 5e-4 --seed 42 --weight_decay 1e-3 --patience 10 --max_grad_norm 1.0 --embed_dim 256 --hidden_dim 128 --num_layers 2 --dropout 0.3 --pad_idx 0 --use_attention --use_char_ngrams --ngram_min 2 --ngram_max 2
+data: 1495 rows in file, 1495 after cleaning, train=1196 val=299 (val_split=0.2, batch_size=32)
+[shapes] train batch: x (32, 50), y (32,), lengths (32,)
+[shapes] val batch: x (32, 50), y (32,), lengths (32,)
+Using device: cuda
+GPU device name: NVIDIA GeForce GTX 1060, count: 1
+Epoch 1/100 | Loss: 1.7811 | Val Acc: 37.79%
+Epoch 2/100 | Loss: 1.6658 | Val Acc: 37.79%
+Epoch 3/100 | Loss: 1.3863 | Val Acc: 45.82%
+Epoch 4/100 | Loss: 1.0925 | Val Acc: 50.84%
+Epoch 5/100 | Loss: 0.9106 | Val Acc: 50.50%
+Epoch 6/100 | Loss: 0.7118 | Val Acc: 53.51%
+Epoch 7/100 | Loss: 0.5573 | Val Acc: 56.86%
+Epoch 8/100 | Loss: 0.4217 | Val Acc: 54.52%
+Epoch 9/100 | Loss: 0.3506 | Val Acc: 53.85%
+Epoch 10/100 | Loss: 0.2831 | Val Acc: 52.84%
+Epoch 11/100 | Loss: 0.2545 | Val Acc: 54.18%
+Epoch 12/100 | Loss: 0.2331 | Val Acc: 52.84%
+Epoch 13/100 | Loss: 0.1727 | Val Acc: 55.85%
+Epoch 14/100 | Loss: 0.1545 | Val Acc: 52.84%
+Epoch 15/100 | Loss: 0.1457 | Val Acc: 53.51%
+Epoch 16/100 | Loss: 0.1284 | Val Acc: 54.18%
+Epoch 17/100 | Loss: 0.1093 | Val Acc: 53.85%
+[*] Early stopping at epoch 17. Best Val Acc: 56.86%
+
+----SAME SETUP WITH DIFFERENT DATASOURCE 2 BELOW----
+
+>>>python group2-hybrid-eliza.py --mode train --data_path ./data/merged_preprocessed/data_after_downsampling.csv --epochs 100 --batch_size 32 --val_split 0.2 --max_len 50 --lr 5e-4 --seed 42 --weight_decay 1e-3 --patience 10 --max_grad_norm 1.0 --embed_dim 256 --hidden_dim 128 --num_layers 2 --dropout 0.3 --pad_idx 0 --use_attention --use_char_ngrams --ngram_min 2 --ngram_max 2
+data: 1044 rows in file, 1044 after cleaning, train=834 val=210 (val_split=0.2, batch_size=32)
+[shapes] train batch: x (32, 50), y (32,), lengths (32,)
+[shapes] val batch: x (32, 50), y (32,), lengths (32,)
+Using device: cuda
+GPU device name: NVIDIA GeForce GTX 1060, count: 1
+Epoch 1/100 | Loss: 1.7857 | Val Acc: 30.48%
+Epoch 2/100 | Loss: 1.7500 | Val Acc: 43.33%
+Epoch 3/100 | Loss: 1.6385 | Val Acc: 39.52%
+Epoch 4/100 | Loss: 1.2985 | Val Acc: 49.05%
+Epoch 5/100 | Loss: 0.9953 | Val Acc: 57.14%
+Epoch 6/100 | Loss: 0.7287 | Val Acc: 54.76%
+Epoch 7/100 | Loss: 0.5310 | Val Acc: 60.48%
+Epoch 8/100 | Loss: 0.3894 | Val Acc: 60.95%
+Epoch 9/100 | Loss: 0.2979 | Val Acc: 59.52%
+Epoch 10/100 | Loss: 0.2376 | Val Acc: 56.19%
+Epoch 11/100 | Loss: 0.2194 | Val Acc: 59.05%
+Epoch 12/100 | Loss: 0.1398 | Val Acc: 55.71%
+Epoch 13/100 | Loss: 0.1027 | Val Acc: 58.57%
+Epoch 14/100 | Loss: 0.1623 | Val Acc: 57.62%
+Epoch 15/100 | Loss: 0.0823 | Val Acc: 58.10%
+Epoch 16/100 | Loss: 0.0705 | Val Acc: 56.67%
+Epoch 17/100 | Loss: 0.0543 | Val Acc: 59.52%
+Epoch 18/100 | Loss: 0.0810 | Val Acc: 55.71%
+[*] Early stopping at epoch 18. Best Val Acc: 60.95%
+
+=============================================================================================
+
+FINAL MODELS WITH DEFAULT PARAMS ONLY DIFFERING IN NETWORK SIZE
+
+1. BILSTM / ATTENTION / NGRAMS (smaller network; checkpoint ./checkpoints/bilstm_smaller_params.pth)
+
+epochs = 30
+batch_size = 32
+val_split = 0.2
+max_len = 50
+lr = 5e-4
+seed = 42
+weight_decay = 1e-3
+patience = 10
+max_grad_norm = 1.0
+embed_dim = 256
+hidden_dim = 128
+num_layers = 2
+dropout = 0.3
+pad_idx = 0
+
+data_path = ./data/merged/Combined.csv
+
+--use_attention
+--use_char_ngrams
+ngram_min = 2
+ngram_max = 2
+
+(log below)
+
+>>>python group2-hybrid-eliza.py --mode train
+data: 1507 rows in file, 1507 after cleaning, train=1206 val=301 (val_split=0.2, batch_size=32)
+[shapes] train batch: x (32, 50), y (32,), lengths (32,)
+[shapes] val batch: x (32, 50), y (32,), lengths (32,)
+Using device: cuda
+GPU device name: NVIDIA GeForce GTX 1060, count: 1
+Epoch 1/30 | Loss: 1.7776 | Val Acc: 36.21%
+Epoch 2/30 | Loss: 1.6588 | Val Acc: 26.58%
+Epoch 3/30 | Loss: 1.3915 | Val Acc: 42.19%
+Epoch 4/30 | Loss: 1.0783 | Val Acc: 45.51%
+Epoch 5/30 | Loss: 0.8059 | Val Acc: 55.81%
+Epoch 6/30 | Loss: 0.5986 | Val Acc: 52.49%
+Epoch 7/30 | Loss: 0.5030 | Val Acc: 56.48%
+Epoch 8/30 | Loss: 0.3714 | Val Acc: 57.14%
+Epoch 9/30 | Loss: 0.3220 | Val Acc: 55.81%
+Epoch 10/30 | Loss: 0.2543 | Val Acc: 56.48%
+Epoch 11/30 | Loss: 0.2056 | Val Acc: 53.16%
+Epoch 12/30 | Loss: 0.1872 | Val Acc: 56.15%
+Epoch 13/30 | Loss: 0.1615 | Val Acc: 53.16%
+Epoch 14/30 | Loss: 0.1607 | Val Acc: 55.48%
+Epoch 15/30 | Loss: 0.1333 | Val Acc: 53.82%
+Epoch 16/30 | Loss: 0.1170 | Val Acc: 56.81%
+Epoch 17/30 | Loss: 0.1457 | Val Acc: 52.49%
+Epoch 18/30 | Loss: 0.1231 | Val Acc: 52.16%
+[*] Early stopping at epoch 18. Best Val Acc: 57.14%
+
+2. BILSTM / ATTENTION / NGRAMS (larger network; checkpoint ./checkpoints/lstm_larger_params.pth)
+
+same as (1.) except these two hyperparameters (checkpoint path matches the larger model):
+
+embed_dim = 512
+hidden_dim = 256
+
+(log below)
+
+>>>python group2-hybrid-eliza.py --mode train --embed_dim 512 --hidden_dim 256 --checkpoint_path ./checkpoints/lstm_larger_params.pth
+data: 1507 rows in file, 1507 after cleaning, train=1206 val=301 (val_split=0.2, batch_size=32)
+[shapes] train batch: x (32, 50), y (32,), lengths (32,)
+[shapes] val batch: x (32, 50), y (32,), lengths (32,)
+Using device: cuda
+GPU device name: NVIDIA GeForce GTX 1060, count: 1
+Epoch 1/30 | Loss: 1.7305 | Val Acc: 37.54%
+Epoch 2/30 | Loss: 1.3118 | Val Acc: 50.50%
+Epoch 3/30 | Loss: 0.9065 | Val Acc: 55.15%
+Epoch 4/30 | Loss: 0.6023 | Val Acc: 56.81%
+Epoch 5/30 | Loss: 0.3985 | Val Acc: 58.14%
+Epoch 6/30 | Loss: 0.2637 | Val Acc: 56.15%
+Epoch 7/30 | Loss: 0.1793 | Val Acc: 59.14%
+Epoch 8/30 | Loss: 0.1529 | Val Acc: 61.13%
+Epoch 9/30 | Loss: 0.0959 | Val Acc: 58.47%
+Epoch 10/30 | Loss: 0.1012 | Val Acc: 61.79%
+Epoch 11/30 | Loss: 0.0975 | Val Acc: 55.81%
+Epoch 12/30 | Loss: 0.1065 | Val Acc: 54.15%
+Epoch 13/30 | Loss: 0.0754 | Val Acc: 54.82%
+Epoch 14/30 | Loss: 0.0694 | Val Acc: 58.14%
+Epoch 15/30 | Loss: 0.0629 | Val Acc: 56.81%
+Epoch 16/30 | Loss: 0.0547 | Val Acc: 58.14%
+Epoch 17/30 | Loss: 0.0697 | Val Acc: 59.14%
+Epoch 18/30 | Loss: 0.0626 | Val Acc: 59.14%
+Epoch 19/30 | Loss: 0.0679 | Val Acc: 57.14%
+Epoch 20/30 | Loss: 0.0978 | Val Acc: 55.48%
+[*] Early stopping at epoch 20. Best Val Acc: 61.79%
+
+=============================================================================================
