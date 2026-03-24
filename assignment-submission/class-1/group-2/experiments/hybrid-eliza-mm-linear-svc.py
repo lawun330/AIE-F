@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 ## Hybrid-ELIZA (Myanmar-aware version)
 ## Derived from hybrid-eliza.py without modifying the original file
 

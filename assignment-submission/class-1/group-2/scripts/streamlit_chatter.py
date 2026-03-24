@@ -5,8 +5,15 @@ This module depends on:
 """
 
 import os
-import random
 import sys
+
+# project root must be on sys.path before importing scripts
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
+import random
+
 import streamlit as st
 from scripts.chat import (
     DEFAULT_CHECKPOINT_PATH,
@@ -18,35 +25,38 @@ from scripts.chat import (
 )
 
 
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if ROOT_DIR not in sys.path:
-    sys.path.insert(0, ROOT_DIR)
-
-
+# function to get environment variable or return default
 def _env(name: str, default: str) -> str:
     return os.environ.get(name, default)
 
 
+# get environment variables or use defaults
 CHECKPOINT = resolve_project_path(_env("CHAT_CHECKPOINT", DEFAULT_CHECKPOINT_PATH))
 STOPWORDS = resolve_project_path(_env("CHAT_STOPWORDS", DEFAULT_STOPWORDS_PATH))
 LANGUAGE = _env("CHAT_LANGUAGE", "mm")
 
 
+# function to load chat context
 @st.cache_resource
 def _cached_ctx(checkpoint_path: str, language: str):
     lang = language if language in ("mm", "en") else "mm"
     return load_chat_context(checkpoint_path, language=lang)
 
 
+# set page config and CSS
 st.set_page_config(page_title="Group 2 — Hybrid ELIZA", layout="centered")
 st.markdown(STREAMLIT_CHAT_CSS, unsafe_allow_html=True)
 
 ctx = _cached_ctx(CHECKPOINT, LANGUAGE)
+
+# load eliza
 eliza = ctx["eliza"]
 
+# display title and caption
 st.title("Group 2 — Hybrid ELIZA")
 st.caption("Rule-based ELIZA powered by Burmese NLP model")
 
+# initialize messages and greeted state
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "greeted" not in st.session_state:
@@ -61,6 +71,7 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+# display messages
 if prompt := st.chat_input("စာသား ရိုက်ပါ …"):
     with st.chat_message("user"):
         st.markdown(prompt)

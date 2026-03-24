@@ -19,6 +19,7 @@ Run all CLI examples from the `group-2/` directory (repository root for this sub
 ```
 group-2/
 ├── group2-hybrid-eliza.py      # main CLI: --mode train | eval | chat
+├── streamlit_app.py            # Streamlit entry for Cloud
 ├── pyproject.toml
 ├── requirements.txt
 ├── .python-version
@@ -31,13 +32,15 @@ group-2/
 ├── checkpoints/                # saved `.pth` bundles (weights + vocab + label maps)
 ├── notebooks/                  # EDA and demos (e.g. Data Preprocessing, Model Training Demo)
 ├── scripts/
+│   ├── __init__.py
 │   ├── train.py
 │   ├── eval.py
 │   ├── chat.py                 # shared chat logic; loads src/model.py + src/eliza.py
-│   ├── streamlit_chatter.py    # Streamlit UI (subprocess from chat.py)
+│   ├── streamlit_chatter.py    # Streamlit UI (subprocess from chat.py or streamlit_app.py)
 │   └── custom_ui_chatter.py    # browser UI (subprocess from chat.py + UI from experiments/burmese_chat_ui.py)
 ├── experiments/                # early standalone hybrids, guides, logs, burmese_chat_ui.py
 └── src/
+    ├── __init__.py
     ├── preprocessing.py        # emotion pipeline: normalize, MMDT, stopwords, optional char n-grams
     ├── rabbit.py               # Zawgyi to Unicode
     ├── vocab_builder.py

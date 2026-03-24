@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 ## Hybrid-ELIZA (Myanmar-aware LSTM version)
 ## Derived from hybrid-eliza-mm.py without modifying the original file
 
