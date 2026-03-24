@@ -18,21 +18,19 @@ Run all CLI examples from the `group-2/` directory (repository root for this sub
 
 ```
 group-2/
+├── ...
 ├── group2-hybrid-eliza.py      # main CLI: --mode train | eval | chat
 ├── streamlit_app.py            # Streamlit entry for Cloud
-├── pyproject.toml
-├── requirements.txt
-├── .python-version
+├── img/
 ├── data/
 │   ├── raw_ungrouped/          # original team files (not merged)
 │   ├── annotated_ungrouped/    # cleaned/labeled team files (not merged)
 │   ├── merged/                 # combined sheets
 │   ├── merged_preprocessed/    # combined sheets before/after downsampling
 │   └── stopwords.txt           # Burmese stopword list (see References)
-├── checkpoints/                # saved `.pth` bundles (weights + vocab + label maps)
-├── notebooks/                  # EDA and demos (e.g. Data Preprocessing, Model Training Demo)
+├── checkpoints/                # saved `.pth` bundles
+├── notebooks/                  # EDA and demos
 ├── scripts/
-│   ├── __init__.py
 │   ├── train.py
 │   ├── eval.py
 │   ├── chat.py                 # shared chat logic; loads src/model.py + src/eliza.py
@@ -40,7 +38,6 @@ group-2/
 │   └── custom_ui_chatter.py    # browser UI (subprocess from chat.py + UI from experiments/burmese_chat_ui.py)
 ├── experiments/                # early standalone hybrids, guides, logs, burmese_chat_ui.py
 └── src/
-    ├── __init__.py
     ├── preprocessing.py        # emotion pipeline: normalize, MMDT, stopwords, optional char n-grams
     ├── rabbit.py               # Zawgyi to Unicode
     ├── vocab_builder.py
@@ -164,6 +161,10 @@ python group2-hybrid-eliza.py --mode chat --chat_ui terminal
 ```bash
 python group2-hybrid-eliza.py --mode chat --chat_ui streamlit
 ```
+or
+```bash
+streamlit run streamlit_app.py
+```
 
 **Custom browser UI**
 
@@ -172,6 +173,12 @@ python group2-hybrid-eliza.py --mode chat --chat_ui custom_ui
 ```
 
 Optional: `--language en` or `--language mm`, `--custom_ui_host`, `--custom_ui_port`.
+
+---
+
+## Current Public Host
+
+Streamlit: https://group2-hybrid-eliza.streamlit.app/
 
 ---
 
