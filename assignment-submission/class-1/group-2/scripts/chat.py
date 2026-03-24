@@ -118,22 +118,29 @@ def chat_turn(
             final=random.choice(eliza.script["finals"]),
         )
 
-    pred_ids, pred_labels, pred_scores = predict_texts(
-        model=ctx["model"],
-        word2id=ctx["word2id"],
-        id2label=ctx["id2label"],
-        max_len=ctx["max_len"],
-        texts=[text],
-        stopwords_path=stopwords_path,
-        use_char_ngrams=ctx["use_char_ngrams"],
-        ngram_min=ctx["ngram_min"],
-        ngram_max=ctx["ngram_max"],
-    )
+    # if model inference fails, fall back to rule-based ELIZA only
+    try:
+        pred_ids, pred_labels, pred_scores = predict_texts(
+            model=ctx["model"],
+            word2id=ctx["word2id"],
+            id2label=ctx["id2label"],
+            max_len=ctx["max_len"],
+            texts=[text],
+            stopwords_path=stopwords_path,
+            use_char_ngrams=ctx["use_char_ngrams"],
+            ngram_min=ctx["ngram_min"],
+            ngram_max=ctx["ngram_max"],
+        )
+        emotion_label = pred_labels[0]
+        emotion_score = float(pred_scores[0])
+    except Exception:
+        emotion_label = "N/A"
+        emotion_score = 0.0
 
     return ChatTurnReply(
         kind="reply",
-        emotion_label=pred_labels[0],
-        emotion_score=float(pred_scores[0]),
+        emotion_label=emotion_label,
+        emotion_score=emotion_score,
         eliza_reply=eliza.respond(text),
     )
 
