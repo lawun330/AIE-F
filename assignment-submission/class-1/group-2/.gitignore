@@ -23,9 +23,5 @@ Thumbs.db
 # Jupyter
 .ipynb_checkpoints/
 
-# Project files
-pyproject.toml
-uv.lock
-
 # Temp
 $*.xlsx
