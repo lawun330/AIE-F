@@ -1,9 +1,9 @@
-numpy==2.4.3
+numpy>=2.4.3
 pandas[excel]
 myanmartools
 mmdt-tokenizer
 torch
 scikit-learn
-seaborn
+seaborn>=0.13.2
 matplotlib
 streamlit>=1.40
