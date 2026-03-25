@@ -449,7 +449,7 @@ def render_page() -> str:
       <header class="hero">
         <div>
           <h1 class="title">Burmese Hybrid ELIZA</h1>
-          <p class="subtitle">မြန်မာလို စာရိုက်ပြီး စကားပြောနိုင်တဲ့ local chat UI</p>
+          <p class="subtitle">Rule-based ELIZA powered by Burmese NLP model - Group 2</p>
         </div>
         <button id="resetButton" class="ghost-button" type="button">စကားဝိုင်းအသစ်</button>
       </header>

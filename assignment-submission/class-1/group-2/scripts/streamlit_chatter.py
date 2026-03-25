@@ -51,7 +51,7 @@ def _cached_ctx(checkpoint_path: str, language: str):
 # function to render app
 def render_app() -> None:
     # set page config and CSS
-    st.set_page_config(page_title="Group 2 — Hybrid ELIZA", layout="centered")
+    st.set_page_config(page_title="Burmese Hybrid ELIZA", layout="centered")
     st.markdown(STREAMLIT_CHAT_CSS, unsafe_allow_html=True)
 
     ctx = _cached_ctx(CHECKPOINT, LANGUAGE)
@@ -60,8 +60,8 @@ def render_app() -> None:
     eliza = ctx["eliza"]
 
     # display title and caption
-    st.title("Group 2 — Hybrid ELIZA")
-    st.caption("Rule-based ELIZA powered by Burmese NLP model")
+    st.title("Burmese Hybrid ELIZA")
+    st.caption("Rule-based ELIZA powered by Burmese NLP model - Group 2")
 
     # initialize messages and greeted state
     if "messages" not in st.session_state:
@@ -115,7 +115,7 @@ def render_app() -> None:
             )
             lines.append(f'<div class="streamlit-chat-probs">{prob_line}</div>')
 
-        lines.extend(["", "---", "", f"Eliza: {out['eliza_reply']}"])
+        lines.extend(["", "---", "", out['eliza_reply']])
         assistant_text = "\n".join(lines)
         with st.chat_message("assistant"):
             st.markdown(assistant_text, unsafe_allow_html=bool(probs))
