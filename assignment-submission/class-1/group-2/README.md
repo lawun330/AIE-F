@@ -178,8 +178,8 @@ Optional: `--language en` or `--language mm`, `--custom_ui_host`, `--custom_ui_p
 
 ## Current Public Host
 
-Streamlit: https://group2-hybrid-eliza.streamlit.app/
-Render: https://group2-hybrid-eliza.onrender.com
+- Streamlit: https://group2-hybrid-eliza.streamlit.app/
+- Render: https://group2-hybrid-eliza.onrender.com
 
 ---
 
