@@ -75,6 +75,7 @@ def predict_texts(
     use_char_ngrams: bool = False,
     ngram_min: int = 2,
     ngram_max: int = 3,
+    return_all_class_probs: bool = False,
 ):
     x, lengths = encode_texts(
         texts,
@@ -92,7 +93,16 @@ def predict_texts(
         pred_scores = probs.max(dim=1).values.tolist()
 
     pred_labels = [id2label[i] for i in pred_ids]
-    return pred_ids, pred_labels, pred_scores
+    all_class_probs = None
+
+    # if called from chat.py, return all class probabilities
+    if return_all_class_probs:
+        class_order = sorted(id2label.keys())
+        rows = probs.cpu().tolist()
+        all_class_probs = [
+            [(id2label[j], float(row[j])) for j in class_order] for row in rows
+        ]
+    return pred_ids, pred_labels, pred_scores, all_class_probs
 
 
 # function to run evaluation on a dataset (see group2-hybrid-eliza.py --mode eval)
@@ -132,7 +142,7 @@ def run_eval(
 
             # encode labels and run shared prediction helper
             y = torch.tensor(batch_labels, dtype=torch.long)
-            pred_ids, _, _ = predict_texts(
+            pred_ids, _, _, _ = predict_texts(
                 model=model,
                 word2id=word2id,
                 id2label=id2label,

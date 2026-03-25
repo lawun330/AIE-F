@@ -327,6 +327,37 @@ def render_page() -> str:
       font-size: 0.88rem;
     }
 
+    .bot-emotion-block {
+      margin-bottom: 2px;
+    }
+
+    .bot-emotion-headline {
+      margin: 0 0 6px 0;
+      color: var(--ink);
+      font-size: inherit;
+      line-height: 1.5;
+    }
+
+    .bot-emotion-probs {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.45;
+    }
+
+    hr.bot-reply-sep {
+      border: 0;
+      border-top: 1px solid rgba(110, 65, 24, 0.14);
+      margin: 12px 0;
+    }
+
+    .bot-reply-body {
+      margin: 0;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
     .chips {
       display: flex;
       gap: 10px;
@@ -464,27 +495,45 @@ def render_page() -> str:
       messages.scrollTop = messages.scrollHeight;
     }
 
-    function appendEmotionMeta(bubble, payload = {}) {
-      if (!payload.emotion) {
-        return;
-      }
-
-      const meta = document.createElement("div");
-      meta.className = "meta";
-      meta.textContent = `Emotion score: ${payload.emotion} (${formatScore(payload.score)})`;
-      bubble.appendChild(meta);
-    }
-
     function appendMessage(role, text, payload = {}) {
       const bubble = document.createElement("article");
       bubble.className = `message ${role}`;
-      bubble.textContent = text;
 
-      if (false && role === "bot" && payload.emotion) {
-        const meta = document.createElement("div");
-        meta.className = "meta";
-        meta.textContent = `စိတ်ခံစားမှု ခန့်မှန်းချက်: ${payload.emotion} (${formatScore(payload.score)})`;
-        bubble.appendChild(meta);
+      const useHybridBot =
+        role === "bot" &&
+        payload.emotion != null &&
+        typeof payload.score === "number";
+
+      if (useHybridBot) {
+        const emotionWrap = document.createElement("div");
+        emotionWrap.className = "bot-emotion-block";
+
+        const head = document.createElement("div");
+        head.className = "bot-emotion-headline";
+        head.textContent = `Predicted emotion: ${payload.emotion} (${formatScore(payload.score)})`;
+        emotionWrap.appendChild(head);
+
+        if (payload.class_probs && payload.class_probs.length) {
+          const probsLine = document.createElement("div");
+          probsLine.className = "bot-emotion-probs";
+          probsLine.textContent = payload.class_probs
+            .map((row) => `${row.label}: ${formatScore(row.prob)}`)
+            .join(" | ");
+          emotionWrap.appendChild(probsLine);
+        }
+
+        const sep = document.createElement("hr");
+        sep.className = "bot-reply-sep";
+
+        const replyBody = document.createElement("div");
+        replyBody.className = "bot-reply-body";
+        replyBody.textContent = text;
+
+        bubble.appendChild(emotionWrap);
+        bubble.appendChild(sep);
+        bubble.appendChild(replyBody);
+      } else {
+        bubble.textContent = text;
       }
 
       messages.appendChild(bubble);
@@ -526,7 +575,7 @@ def render_page() -> str:
         return;
       }
 
-      const userBubble = appendMessage("user", text);
+      appendMessage("user", text);
       input.value = "";
 
       const payload = await requestJson("/api/chat", {
@@ -536,7 +585,6 @@ def render_page() -> str:
       });
 
       statusText.textContent = payload.status_text;
-      appendEmotionMeta(userBubble, payload);
       appendMessage("bot", payload.reply, payload);
 
       if (payload.quit) {

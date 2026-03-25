@@ -122,12 +122,12 @@ python group2-hybrid-eliza.py --mode train
 
 **2. Custom model shape & checkpoint name**
 ```bash
-python group2-hybrid-eliza.py --mode train --embed_dim 512 --hidden_dim 256 --checkpoint_path ./checkpoints/bilstm_larger_params.pth
+python group2-hybrid-eliza.py --mode train --embed_dim 512 --hidden_dim 256 --checkpoint_path ./checkpoints/bilstm_larger_params_after_downsampl.pth
 ```
 
 **3. Further customizations**  
 ```bash
-python group2-hybrid-eliza.py --mode train --data_path ./data/merged/Combined.csv --embed_dim 128 --hidden_dim 96 --checkpoint_path ./checkpoints/bilstm_smaller_params_after_downsampl.pth
+python group2-hybrid-eliza.py --mode train --data_path ./data/merged/Combined.csv --embed_dim 256 --hidden_dim 128 --checkpoint_path ./checkpoints/bilstm_smaller_params.pth
 ```
 or
 ```bash
@@ -179,6 +179,7 @@ Optional: `--language en` or `--language mm`, `--custom_ui_host`, `--custom_ui_p
 ## Current Public Host
 
 Streamlit: https://group2-hybrid-eliza.streamlit.app/
+Render: https://group2-hybrid-eliza.onrender.com
 
 ---
 

@@ -59,6 +59,7 @@ class ModularWebBackend:
             "reply": random.choice(self.eliza.script["initials"]),
             "emotion": None,
             "score": None,
+            "class_probs": None,
             "quit": False,
             "model_loaded": self.model_loaded,
             "status_text": self.status_text(),
@@ -71,6 +72,7 @@ class ModularWebBackend:
                 "reply": "တစ်ခုခု ရိုက်ပြီး ပြောပြပါ။",
                 "emotion": None,
                 "score": None,
+                "class_probs": None,
                 "quit": False,
                 "model_loaded": self.model_loaded,
                 "status_text": self.status_text(),
@@ -82,6 +84,7 @@ class ModularWebBackend:
                 "reply": "တစ်ခုခု ရိုက်ပြီး ပြောပြပါ။",
                 "emotion": None,
                 "score": None,
+                "class_probs": None,
                 "quit": False,
                 "model_loaded": self.model_loaded,
                 "status_text": self.status_text(),
@@ -91,14 +94,18 @@ class ModularWebBackend:
                 "reply": out["final"],
                 "emotion": None,
                 "score": None,
+                "class_probs": None,
                 "quit": True,
                 "model_loaded": self.model_loaded,
                 "status_text": self.status_text(),
             }
+        ep = out["emotion_probs"]
+        class_probs = [{"label": lab, "prob": float(p)} for lab, p in ep] if ep else None
         return {
             "reply": out["eliza_reply"],
             "emotion": out["emotion_label"],
             "score": out["emotion_score"],
+            "class_probs": class_probs,
             "quit": False,
             "model_loaded": self.model_loaded,
             "status_text": self.status_text(),

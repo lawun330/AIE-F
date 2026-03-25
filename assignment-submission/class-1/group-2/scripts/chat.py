@@ -20,7 +20,7 @@ from scripts.eval import load_inference_bundle, predict_texts
 from src.eliza import Eliza
 
 
-# single defaults for train/eval/chat entry points (project root = parent of scripts/)
+# single defaults for train/eval/chat entry points
 DEFAULT_CHECKPOINT_PATH = "./checkpoints/bilstm_larger_params_after_downsampl.pth"
 DEFAULT_STOPWORDS_PATH = "./data/stopwords.txt"
 
@@ -49,6 +49,13 @@ STREAMLIT_CHAT_CSS = """
         border-radius: 12px;
         border: 1px solid rgba(110, 65, 24, 0.12);
     }
+    /* only the pipe-separated class-probability row for streamlit_chatter */
+    [data-testid="stChatMessage"] div.streamlit-chat-probs {
+        font-size: 0.78rem;
+        line-height: 1.4;
+        margin: 0.15rem 0 0.35rem 0;
+        color: rgba(47, 36, 27, 0.88);
+    }
 </style>
 """
 
@@ -57,6 +64,7 @@ class ChatTurnReply(TypedDict):
     kind: str
     emotion_label: str
     emotion_score: float
+    emotion_probs: list[tuple[str, float]]
     eliza_reply: str
 
 
@@ -120,7 +128,7 @@ def chat_turn(
 
     # if model inference fails, fall back to rule-based ELIZA only
     try:
-        pred_ids, pred_labels, pred_scores = predict_texts(
+        _pred_ids, pred_labels, pred_scores, all_rows = predict_texts(
             model=ctx["model"],
             word2id=ctx["word2id"],
             id2label=ctx["id2label"],
@@ -130,17 +138,21 @@ def chat_turn(
             use_char_ngrams=ctx["use_char_ngrams"],
             ngram_min=ctx["ngram_min"],
             ngram_max=ctx["ngram_max"],
+            return_all_class_probs=True,
         )
         emotion_label = pred_labels[0]
         emotion_score = float(pred_scores[0])
+        emotion_probs = all_rows[0] if all_rows else []
     except Exception:
         emotion_label = "N/A"
         emotion_score = 0.0
+        emotion_probs = []
 
     return ChatTurnReply(
         kind="reply",
         emotion_label=emotion_label,
         emotion_score=emotion_score,
+        emotion_probs=emotion_probs,
         eliza_reply=eliza.respond(text),
     )
 
@@ -169,6 +181,8 @@ def run_chat(
             break
 
         print(f"Predicted emotion: {out['emotion_label']} ({out['emotion_score']:.2%})")
+        for lab, p in out["emotion_probs"]:
+            print(f"  {lab}: {p:.2%}")
         print(f"Eliza: {out['eliza_reply']}")
 
 

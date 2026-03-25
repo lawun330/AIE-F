@@ -10,9 +10,10 @@ This module depends on:
 - scripts/chat.py
 """
 
+import html
 import os
-import sys
 import random
+import sys
 import streamlit as st
 
 # project root must be on sys.path before importing scripts
@@ -75,7 +76,13 @@ def render_app() -> None:
     
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+            st.markdown(
+                message["content"],
+                unsafe_allow_html=(
+                    message["role"] == "assistant"
+                    and "streamlit-chat-probs" in message["content"]
+                ),
+            )
 
     # display messages
     if prompt := st.chat_input("စာသား ရိုက်ပါ …", key="group2_chat_input"):
@@ -97,12 +104,21 @@ def render_app() -> None:
             st.session_state.messages.append({"role": "assistant", "content": assistant_text})
             st.stop()
     
-        assistant_text = (
-            f"Predicted emotion: {out['emotion_label']} ({out['emotion_score']:.2%})\n\n"
-            f"Eliza: {out['eliza_reply']}"
-        )
+        lines = [
+            f"Predicted emotion: {out['emotion_label']} ({out['emotion_score']:.2%})",
+        ]
+        probs = out.get("emotion_probs") or []
+        if probs:
+            lines.append("")
+            prob_line = " | ".join(
+                f"{html.escape(str(lab))} {p:.2%}" for lab, p in probs
+            )
+            lines.append(f'<div class="streamlit-chat-probs">{prob_line}</div>')
+
+        lines.extend(["", "---", "", f"Eliza: {out['eliza_reply']}"])
+        assistant_text = "\n".join(lines)
         with st.chat_message("assistant"):
-            st.markdown(assistant_text)
+            st.markdown(assistant_text, unsafe_allow_html=bool(probs))
         st.session_state.messages.append({"role": "assistant", "content": assistant_text})
 
 if __name__ == "__main__":

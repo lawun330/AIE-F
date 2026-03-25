@@ -29,8 +29,9 @@ def run_train(
     batch_size,                     # CLI arg passed with --batch_size
     val_split,                      # CLI arg passed with --val_split
     max_len,                        # CLI arg passed with --max_len
-    tokenized_output_path=None,     # not in wrapper; optional debug export path
-    stopwords_path="../data/stopwords.txt", # CLI arg passed with --stopwords_path
+    tokenized_output_path="./data/tokenized/data_after_downsampling_tokenized.csv",     
+    # NOT PASSABLE; optional
+    stopwords_path="./data/stopwords.txt", # CLI arg passed with --stopwords_path
     text_col="text",                # CLI arg passed with --text_col
     label_col="label",              # CLI arg passed with --label_col
     seed=42,                        # CLI arg passed with --seed
